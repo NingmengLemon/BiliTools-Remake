@@ -9,8 +9,8 @@ from biliapis import error
 
 
 class LoginAPIs(template.APITemplate):
-    API_EXIT = "https://passport.bilibili.com/login/exit/v2"
-    API_INFO = "https://api.bilibili.com/x/web-interface/nav"
+    _API_EXIT = "https://passport.bilibili.com/login/exit/v2"
+    _API_INFO = "https://api.bilibili.com/x/web-interface/nav"
 
     @utils.pick_data()
     @checker.check_bilicode()
@@ -22,22 +22,22 @@ class LoginAPIs(template.APITemplate):
 
     @template.request_template("post", "str")
     def __exit_login_req(self):
-        csrf = utils.get_csrf(self.session)
+        csrf = utils.get_csrf(self._session)
         if not csrf:
             raise error.BiliError(-101, "未登录")
-        return LoginAPIs.API_EXIT, {"data": {"biliCSRF": csrf}}
+        return LoginAPIs._API_EXIT, {"data": {"biliCSRF": csrf}}
 
     @utils.pick_data()
     @checker.check_bilicode()
     @template.request_template()
     def get_login_info(self):
         """获得当前登录用户的信息"""
-        return LoginAPIs.API_INFO
+        return LoginAPIs._API_INFO
 
 
 class QRLoginAPIs(template.APITemplate):
-    API_LOGIN_URL = "https://passport.bilibili.com/x/passport-login/web/qrcode/generate"
-    API_POLL = "https://passport.bilibili.com/x/passport-login/web/qrcode/poll"
+    _API_LOGIN_URL = "https://passport.bilibili.com/x/passport-login/web/qrcode/generate"
+    _API_POLL = "https://passport.bilibili.com/x/passport-login/web/qrcode/poll"
 
     @utils.pick_data()
     @checker.check_bilicode()
@@ -49,7 +49,7 @@ class QRLoginAPIs(template.APITemplate):
         获取到的URL生成为二维码供用户扫描，
         qrcode_key传给poll进行扫描状态轮询
         """
-        return QRLoginAPIs.API_LOGIN_URL, {}
+        return QRLoginAPIs._API_LOGIN_URL, {}
 
     @utils.pick_data()
     @checker.check_bilicode()
@@ -60,7 +60,7 @@ class QRLoginAPIs(template.APITemplate):
 
         成功后会自动设置cookies并返回一个跨域登录URL
         """
-        return QRLoginAPIs.API_POLL, {"params": {"qrcode_key": qrcode_key}}
+        return QRLoginAPIs._API_POLL, {"params": {"qrcode_key": qrcode_key}}
 
     @staticmethod
     def cookiejar_from_crossdomain_url(url: str):

@@ -1,4 +1,4 @@
-from typing import Optional, Any, Callable, Literal
+from typing import Any, Callable, Literal
 import functools
 
 from requests import Session
@@ -11,7 +11,7 @@ class APITemplate:
     每个分类的API的模板，预定义了一些内容供调用
     """
 
-    DEFAULT_HEADERS = {
+    _DEFAULT_HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
         "Referer": "https://www.bilibili.com/",
     }
@@ -21,11 +21,11 @@ class APITemplate:
         self.__wbimanager = wbimanager
 
     @property
-    def session(self):
+    def _session(self):
         return self.__session
 
     @property
-    def wbimanager(self):
+    def _wbimanager(self):
         return self.__wbimanager
 
 
@@ -56,8 +56,12 @@ def request_template(
                 url, reqparams = rv, {}
             else:
                 raise ValueError("Not specified return value type: %s" % type(rv))
-            reqparams.setdefault("headers", self.DEFAULT_HEADERS)
-            with self.session.request(mod, url, **reqparams) as resp:
+            reqparams.setdefault(
+                "headers", self._DEFAULT_HEADERS  # pylint: disable=W0212
+            )
+            with self._session.request(  # pylint: disable=W0212
+                mod, url, **reqparams
+            ) as resp:
                 resp.raise_for_status()
                 match handle:
                     case "str":
@@ -72,21 +76,3 @@ def request_template(
         return wrapper
 
     return decorator
-
-
-class APIContainer:
-    pass
-
-
-def new_apis(
-    session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None
-) -> APIContainer:
-    # TODO: 需要跟进编写进度
-    session = session if session else Session()
-    wbimanager = wbimanager if wbimanager else CachedWbiManager()
-
-    from biliapis.apis.video import VideoAPIs
-
-    container = APIContainer()
-    setattr(container, "video", VideoAPIs(session, wbimanager))
-    return container

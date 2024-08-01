@@ -12,14 +12,14 @@ from biliapis.wbi import CachedWbiManager
 
 
 class VideoAPIs(template.APITemplate):
-    API_DETAIL = "https://api.bilibili.com/x/web-interface/view"
-    API_STREAM_WBI = "https://api.bilibili.com/x/player/wbi/playurl"
+    _API_DETAIL = "https://api.bilibili.com/x/web-interface/view"
+    _API_STREAM_WBI = "https://api.bilibili.com/x/player/wbi/playurl"
     APIS_STREAM_FALLBACK = (
         ("https://api.bilibili.com/pgc/player/web/v2/playurl", "data"),
         ("https://api.bilibili.com/pgc/player/web/playurl", "result"),
         ("https://api.bilibili.com/x/player/playurl", "result"),
     )
-    API_PLAYER = "https://api.bilibili.com/x/player/v2"
+    _API_PLAYER = "https://api.bilibili.com/x/player/v2"
 
     def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
         super().__init__(session, wbimanager)
@@ -34,7 +34,7 @@ class VideoAPIs(template.APITemplate):
     @template.request_template()
     def get_video_detail(self, *, avid=None, bvid=None):
         params = utils.remove_none({"aid": avid, "bvid": bvid})
-        return VideoAPIs.API_DETAIL, {"params": params}
+        return VideoAPIs._API_DETAIL, {"params": params}
 
     @checker.check_abvid
     def get_stream_dash(self, cid: int, *, avid=None, bvid=None) -> dict[str, Any]:
@@ -51,7 +51,7 @@ class VideoAPIs(template.APITemplate):
                 }
             )
         )
-        params_signed = self.wbimanager.sign(params.copy())
+        params_signed = self._wbimanager.sign(params.copy())
         try:
             return self._get_stream_dash_wbi(params_signed)
         except BiliError as e:
@@ -62,7 +62,7 @@ class VideoAPIs(template.APITemplate):
     @checker.check_bilicode()
     @template.request_template()
     def _get_stream_dash_wbi(self, params_signed: dict):
-        return VideoAPIs.API_STREAM_WBI, {"params": params_signed}
+        return VideoAPIs._API_STREAM_WBI, {"params": params_signed}
 
     def __get_stream_dash_fallback_factory(self) -> Generator[Callable, None, None]:
         def get_fallback(api: str, params_: dict):
@@ -94,4 +94,4 @@ class VideoAPIs(template.APITemplate):
                 }
             )
         )
-        return VideoAPIs.API_PLAYER, {"params": params}
+        return VideoAPIs._API_PLAYER, {"params": params}

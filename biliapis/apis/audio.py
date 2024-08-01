@@ -6,18 +6,17 @@ from biliapis import template
 
 
 class AudioAPIs(template.APITemplate):
-    API_INFO = "https://www.bilibili.com/audio/music-service-c/web/song/info"
-    API_STREAM = "https://api.bilibili.com/audio/music-service-c/url"
-    API_LYRICS = "https://www.bilibili.com/audio/music-service-c/web/song/lyric"
-    API_TAGS = "https://www.bilibili.com/audio/music-service-c/web/tag/song"
-    API_PLAYMENU = "https://www.bilibili.com/audio/music-service-c/web/song/of-menu"
+    _API_INFO = "https://www.bilibili.com/audio/music-service-c/web/song/info"
+    _API_STREAM = "https://api.bilibili.com/audio/music-service-c/url"
+    _API_TAGS = "https://www.bilibili.com/audio/music-service-c/web/tag/song"
+    _API_PLAYMENU = "https://www.bilibili.com/audio/music-service-c/web/song/of-menu"
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template()
     def get_info(self, auid: int):
         """获取单曲信息"""
-        return AudioAPIs.API_INFO, {"params": {"sid": auid}}
+        return AudioAPIs._API_INFO, {"params": {"sid": auid}}
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
@@ -28,7 +27,7 @@ class AudioAPIs(template.APITemplate):
 
         quality = 0(128K) / 1(192K) / 2(320K) / 3(FLAC)
         """
-        return AudioAPIs.API_STREAM, {
+        return AudioAPIs._API_STREAM, {
             "params": {
                 "songid": auid,
                 "quality": quality,
@@ -43,13 +42,13 @@ class AudioAPIs(template.APITemplate):
     @template.request_template()
     def get_tags(self, auid: int):
         """获取单曲标签"""
-        return AudioAPIs.API_TAGS, {"params": {"sid": auid}}
+        return AudioAPIs._API_TAGS, {"params": {"sid": auid}}
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template()
     def get_playmenu(self, amid: int, page: int = 1, page_size: int = 100):
         """获取歌单"""
-        return AudioAPIs.API_PLAYMENU, {
+        return AudioAPIs._API_PLAYMENU, {
             "params": {"sid": amid, "pn": page, "ps": page_size}
         }
