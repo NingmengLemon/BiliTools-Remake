@@ -1,12 +1,12 @@
 import logging
-import sys
 import os
+import sys
 
 import pytest
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from biliapis.utils import fallback, FallbackFailure  # pylint: disable=C0413
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from biliapis.utils import FallbackFailure, fallback # pylint: disable=C
 
 # 示例主函数和回退函数
 def main_func():
