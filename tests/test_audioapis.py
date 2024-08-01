@@ -31,17 +31,17 @@ def test_get_stream():
 
 
 def test_get_tags():
-    streams = apis.get_tags(auid=37787)
+    tags = apis.get_tags(auid=37787)
     with open(os.path.join(SAVEDIR, "audio_tags.json"), "w+", encoding="utf-8") as f:
-        json.dump(streams, f, indent=4, ensure_ascii=False)
+        json.dump(tags, f, indent=4, ensure_ascii=False)
 
 
 def test_get_playmenu():
-    streams = apis.get_playmenu(amid=125312)
+    menu = apis.get_playmenu(amid=125312)
     with open(
         os.path.join(SAVEDIR, "audio_playmenu.json"), "w+", encoding="utf-8"
     ) as f:
-        json.dump(streams, f, indent=4, ensure_ascii=False)
+        json.dump(menu, f, indent=4, ensure_ascii=False)
 
 
 if __name__ == "__main__":
