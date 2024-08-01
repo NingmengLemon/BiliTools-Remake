@@ -5,6 +5,7 @@ from requests import Session, adapters
 from biliapis.wbi import CachedWbiManager
 
 # collect components
+from biliapis.template import APITemplate
 from . import apis
 
 components = [v for k, v in vars(apis).items() if k.endswith("APIs")]
@@ -37,4 +38,11 @@ def new_apis(
             compcls.__name__.removesuffix("APIs").lower(),
             compcls(session=session, wbimanager=wbimanager),
         )
+    setattr(container, "session", session)
+    setattr(container, "wbimanager", wbimanager)
+    setattr(
+        container,
+        "DEFAULT_HEADERS",
+        APITemplate._DEFAULT_HEADERS,  # pylint: disable=W0212
+    )
     return container
