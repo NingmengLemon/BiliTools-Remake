@@ -43,9 +43,11 @@ def request_template(
 
     def decorator(
         func: Callable[..., tuple[str, dict[str, Any]]]
-    ) -> Callable[..., tuple[str, dict[str, Any] | bytes | str | Any]]:
+    ) -> Callable[..., dict[str, Any] | bytes | str | Any]:
         @functools.wraps(func)
-        def wrapper(self: APITemplate, *args, **kwargs):
+        def wrapper(
+            self: APITemplate, *args, **kwargs
+        ) -> dict[str, Any] | bytes | str | Any:
             if isinstance(rv := func(self, *args, **kwargs), tuple):
                 url, reqparams = rv
                 if reqparams is None:
@@ -79,6 +81,7 @@ class APIContainer:
 def new_apis(
     session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None
 ) -> APIContainer:
+    # TODO: 需要跟进编写进度
     session = session if session else Session()
     wbimanager = wbimanager if wbimanager else CachedWbiManager()
 

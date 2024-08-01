@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from biliapis import checker
 from biliapis import utils
@@ -16,7 +16,7 @@ class MediaAPIs(template.APITemplate):
         mdid: Optional[int] = None,
         ssid: Optional[int] = None,
         epid: Optional[int] = None,
-    ):
+    ) -> dict[str, Any]:
         """获取剧集的详细信息
 
         应当从三个参数中选择一个来传入，应用顺序：mdid - ssid - epid"""
@@ -24,11 +24,12 @@ class MediaAPIs(template.APITemplate):
             raise ValueError("Must pass ONE parameter from `mdid` `ssid` and `epid`")
         if mdid:
             media = self.get_info(mdid=mdid)
-            ssid = media["media"]["season_id"]
+            ssid = media.get("media", {}).get("season_id")
         if ssid:
             return self._get_detail_via_ssid(ssid=ssid)
         if epid:
             return self._get_detail_via_epid(epid=epid)
+        raise ValueError("Must pass a parameter from `mdid` `ssid` and `epid`")
 
     @utils.pick_data("result")
     @checker.check_bilicode()

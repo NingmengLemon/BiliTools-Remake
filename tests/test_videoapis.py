@@ -19,7 +19,7 @@ apis = VideoAPIs(session, CachedWbiManager(session))
 
 
 def test_get_detail():
-    data = apis.get_video_detail(avid=170001)
+    data = apis.get_video_detail(bvid="BV14h4y1G7Mi")
     with open(os.path.join(SAVEDIR, "video_detail.json"), "w+", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
@@ -28,6 +28,12 @@ def test_get_stream():
     streams = apis.get_stream_dash(cid=279786, avid=170001)
     with open(os.path.join(SAVEDIR, "video_streams.json"), "w+", encoding="utf-8") as f:
         json.dump(streams, f, indent=4, ensure_ascii=False)
+
+
+def test_get_player():
+    player = apis.get_player_info(cid=1156509226, bvid="BV14h4y1G7Mi")
+    with open(os.path.join(SAVEDIR, "video_player.json"), "w+", encoding="utf-8") as f:
+        json.dump(player, f, indent=4, ensure_ascii=False)
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ class VideoAPIs(template.APITemplate):
         ("https://api.bilibili.com/pgc/player/web/playurl", "result"),
         ("https://api.bilibili.com/x/player/playurl", "result"),
     )
+    API_PLAYER = "https://api.bilibili.com/x/player/v2"
 
     def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
         super().__init__(session, wbimanager)
@@ -74,3 +75,23 @@ class VideoAPIs(template.APITemplate):
                 checker.check_bilicode(),
                 utils.pick_data(k),
             )
+
+    @utils.pick_data()
+    @checker.check_abvid
+    @checker.check_bilicode()
+    @template.request_template()
+    def get_player_info(self, cid: int, *, avid=None, bvid=None):
+        '''获取web端播放器的元数据，包括字幕文件
+        
+        要获取字幕文件需要登录（否则字幕列表为空），
+        判断字幕是否是AI生成可以判断URL中是否包含`ai_subtitle`'''
+        params = {"cid": cid}
+        params.update(
+            utils.remove_none(
+                {
+                    "avid": avid,
+                    "bvid": bvid,
+                }
+            )
+        )
+        return VideoAPIs.API_PLAYER, {"params": params}
