@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable, Optional
+from typing import Any, Callable, Iterable, Optional, Literal
 import functools
 import logging
 import re
@@ -65,7 +65,6 @@ class Fallbacker:
     用于做fallback装饰的装饰器类
     （不完全是，需要fallback函数做辅助）
     """
-
     def __init__(self, func: Callable, tolerable_exceptions: Optional[Iterable] = None):
         self._tol_excs = (
             tuple(tolerable_exceptions) if tolerable_exceptions else (Exception,)
@@ -105,14 +104,28 @@ def decorate(func: Callable, *decorators: Callable):
     return func
 
 
-def extract_ids(
-    source: str, session: Optional[requests.Session] = None
-) -> tuple[Optional[str | int], Optional[str]]:
+def extract_ids(source: str, session: Optional[requests.Session] = None) -> tuple[
+    Optional[str | int],
+    Optional[
+        Literal[
+            "auid",
+            "bvid",
+            "avid",
+            "cvid",
+            "mdid",
+            "ssid",
+            "epid",
+            "uid",
+            "mcid",
+            "amid",
+        ]
+    ],
+]:
     """
     根据输入的来源返回各种id
 
     session 用于重定向短链接
-    
+
     TODO: 重构一下这个函数让它看上去不那么史
     """
     if "b23.tv/" in source:  # 短链接重定向
