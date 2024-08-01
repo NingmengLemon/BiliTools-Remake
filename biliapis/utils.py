@@ -106,27 +106,6 @@ def decorate(func: Callable, *decorators: Callable):
     return func
 
 
-def cookiejar_from_crossdomain_url(url: str):
-    """URL 来自轮询登录成功后返回的数据"""
-    tmpjar = cookiejar.MozillaCookieJar()
-    data = url.split("?")[-1].split("&")[:-1]
-    for domain in [".bilibili.com", ".bigfun.cn", ".bigfunapp.cn", ".biligame.com"]:
-        for item in data:
-            i = item.split("=", 1)
-            # fmt: off
-            tmpjar.set_cookie(
-                cookiejar.Cookie(
-                    0, i[0], i[1], None, False,
-                    domain, True, domain.startswith('.'),
-                    '/', False, False,
-                    int(time.time()) + (6 * 30 * 24 * 60 * 60),
-                    False, None, None, {}
-                    )
-                )
-            # fmt: on
-    return tmpjar
-
-
 def extract_ids(source: str) -> tuple[Optional[str], Optional[str | int]]:
     # TODO:
     return NotImplemented
