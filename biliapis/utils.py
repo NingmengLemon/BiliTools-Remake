@@ -32,7 +32,7 @@ def pick_data(datakey: str = "data"):
     从函数的返回值中获取指定键对应的值，需求该函数返回值为`dict[str, Any]`类型
     """
 
-    def decorator(func):
+    def decorator(func: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
@@ -125,6 +125,7 @@ def cookiejar_from_crossdomain_url(url: str):
                 )
             # fmt: on
     return tmpjar
+
 
 def extract_ids(source: str) -> tuple[Optional[str], Optional[str | int]]:
     # TODO:

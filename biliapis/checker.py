@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, Callable, Any
 import functools
 
 from biliapis.error import BiliError
@@ -31,7 +31,7 @@ def _check_bilicode(
 
 
 def check_bilicode(codekey: str = "code", msgkey: str = "message", okcode: int = 0):
-    def decorator(func):
+    def decorator(func: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             return _check_bilicode(
