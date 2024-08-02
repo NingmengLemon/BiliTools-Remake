@@ -15,6 +15,8 @@ from threading import Lock
 
 import requests
 
+from biliapis.constants import HEADERS as _HEADERS
+
 __all__ = ["CachedWbiManager", "sign", "get_wbi_keys"]
 
 # fmt: off
@@ -26,11 +28,7 @@ MIXINKEY_ENC_TABLE = [
 ]
 # fmt: on
 
-_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
-    "Referer": "https://www.bilibili.com/",
-}
-
+HEADERS = _HEADERS.copy()
 
 class CachedWbiManager:
     def __init__(self, session: Optional[requests.Session] = None) -> None:
@@ -85,7 +83,7 @@ def get_wbi_keys(session: Optional[requests.Session] = None) -> tuple[str, str]:
     "获取最新的 img_key 和 sub_key"
     session = session if session else requests.Session()
     with session.get(
-        "https://api.bilibili.com/x/web-interface/nav", headers=_HEADERS
+        "https://api.bilibili.com/x/web-interface/nav", headers=HEADERS
     ) as resp:
         resp.raise_for_status()
         json_content = resp.json()

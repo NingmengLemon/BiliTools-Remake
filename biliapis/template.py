@@ -4,6 +4,7 @@ import functools
 from requests import Session
 
 from biliapis.wbi import CachedWbiManager
+from biliapis.constants import HEADERS as DEFAULT_HEADERS
 
 
 class APITemplate:
@@ -11,10 +12,7 @@ class APITemplate:
     每个分类的API的模板，预定义了一些内容供调用
     """
 
-    _DEFAULT_HEADERS = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
-        "Referer": "https://www.bilibili.com/",
-    }
+    _DEFAULT_HEADERS = DEFAULT_HEADERS.copy()
 
     def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
         self.__session = session

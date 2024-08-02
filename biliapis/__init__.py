@@ -1,4 +1,4 @@
-from biliapis.factory import new_apis
+from biliapis.factory import new_apis, APIContainer
 from biliapis import utils, bilicodes
 from biliapis.error import BiliError
 from biliapis import apis
@@ -11,4 +11,5 @@ __all__ = [
     "BiliError",
     "apis",
     "CachedWbiManager",
+    "APIContainer",  # for type hints
 ]
