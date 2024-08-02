@@ -92,6 +92,6 @@ def withcsrf(func):
         if not csrf:
             raise BiliError(-101, "未登录")
         kwargs["csrf"] = csrf
-        return func(*args, **kwargs)
+        return func(self, *args, **kwargs)
 
     return wrapper
