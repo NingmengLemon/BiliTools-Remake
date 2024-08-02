@@ -5,7 +5,7 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from core import downloader  # pylint: disable=C0413,E0611
+from bilicore import downloader  # pylint: disable=C0413,E0611
 
 SAVEDIR = "./samples/"
 if not os.path.exists(SAVEDIR):
