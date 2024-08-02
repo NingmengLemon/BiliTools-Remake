@@ -5,6 +5,11 @@ from requests import Session
 
 from biliapis.wbi import CachedWbiManager
 from biliapis.constants import HEADERS as DEFAULT_HEADERS
+from biliapis.error import BiliError
+from biliapis.utils import get_csrf
+
+
+__all__ = ["APITemplate", "request_template", "withcsrf"]
 
 
 class APITemplate:
@@ -74,3 +79,19 @@ def request_template(
         return wrapper
 
     return decorator
+
+
+def withcsrf(func):
+    """对 APITemplate 的子类的方法做装饰，简化请求调用
+
+    提取session中的cookies中的 csrf 以关键字参数形式传递给被装饰函数，未能获取到csrf则报错"""
+
+    @functools.wraps(func)
+    def wrapper(self: APITemplate, *args, **kwargs):
+        csrf = get_csrf(self._session)  # pylint: disable=W0212
+        if not csrf:
+            raise BiliError(-101, "未登录")
+        kwargs["csrf"] = csrf
+        return func(*args, **kwargs)
+
+    return wrapper

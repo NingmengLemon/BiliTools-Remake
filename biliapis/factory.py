@@ -8,6 +8,8 @@ from biliapis.wbi import CachedWbiManager
 from biliapis.constants import HEADERS
 from . import apis
 
+__all__ = ["APIContainer", "default_session", "new_apis"]
+
 components = [v for k, v in vars(apis).items() if k.endswith("APIs")]
 
 
