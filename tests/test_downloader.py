@@ -15,11 +15,12 @@ if not os.path.exists(SAVEDIR):
 
 TEST_LINKS = (
     ("https://web.hycdn.cn/arknights/files/20240730/Pepe.rar", "pepe.rar"),
-    ("http://deb.monblog.top:10712/files/Adobe_Illustrator_2022_SP.zip", "ai2022.zip"),
     (
         "https://mirror.nyist.edu.cn/ubuntu-releases/24.04/ubuntu-24.04-desktop-amd64.iso",
         "ubuntu2404_amd64.iso",
     ),
+    ("https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe", "biliwin.exe"),
+    ("https://dl.hdslb.com/mobile/latest/android64/iBiliPlayer-bili.apk", "bili.apk")
 )
 
 
@@ -36,7 +37,7 @@ def test_common_downloader():
 
 
 def test_multithread_downloader():
-    url, filename = TEST_LINKS[2]
+    url, filename = TEST_LINKS[3]
     d = downloader.MultiThreadDownloader(
         url,
         os.path.join(SAVEDIR, filename),
