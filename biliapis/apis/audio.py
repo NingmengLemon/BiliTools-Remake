@@ -14,14 +14,14 @@ class AudioAPIs(template.APITemplate):
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template()
-    def get_info(self, auid: int):
+    def get_info(self, auid):
         """获取单曲信息"""
         return AudioAPIs._API_INFO, {"params": {"sid": auid}}
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template()
-    def get_stream(self, auid: int, quality: Literal[0, 1, 2, 3] = 3):
+    def get_stream(self, auid, quality = 3):
         """
         单曲取流
 
@@ -40,14 +40,14 @@ class AudioAPIs(template.APITemplate):
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template()
-    def get_tags(self, auid: int):
+    def get_tags(self, auid):
         """获取单曲标签"""
         return AudioAPIs._API_TAGS, {"params": {"sid": auid}}
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template()
-    def get_playmenu(self, amid: int, page: int = 1, page_size: int = 100):
+    def get_playmenu(self, amid, page = 1, page_size = 100):
         """获取歌单"""
         return AudioAPIs._API_PLAYMENU, {
             "params": {"sid": amid, "pn": page, "ps": page_size}

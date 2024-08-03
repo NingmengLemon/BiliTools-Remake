@@ -51,6 +51,12 @@ def pick_data(datakey: str = "data"):
 
     return decorator
 
+def discard_return(func: Callable[..., Any]) -> Callable[..., None]:
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        func(*args, **kwargs)
+    return wrapper
+
 
 class FallbackFailure(Exception):
     """

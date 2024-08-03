@@ -83,7 +83,7 @@ class LoginAPIs(template.APITemplate):
         )
         return html.xpath("//div[id='1-name']/text()")
 
-    @template.request_template()
+    @template.request_template(handle="str")
     def __get_refresh_csrf_req(self, corresp: str):
         return LoginAPIs._API_REFRESH_CSRF + corresp
 
@@ -101,6 +101,7 @@ class LoginAPIs(template.APITemplate):
             }
         }
 
+    @utils.discard_return
     @checker.check_bilicode()
     @template.request_template("post")
     @template.withcsrf

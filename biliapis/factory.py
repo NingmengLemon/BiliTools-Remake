@@ -14,7 +14,24 @@ components = [v for k, v in vars(apis).items() if k.endswith("APIs")]
 
 
 class APIContainer:
-    pass
+    def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
+        self.DEFAULT_HEADERS: dict[str, str] = HEADERS.copy()
+        self._session = session
+        self._wbimanager = wbimanager
+        for compcls in components:
+            setattr(
+                self,
+                compcls.__name__.removesuffix("APIs").lower(),
+                compcls(session=session, wbimanager=wbimanager),
+            )
+
+    @property
+    def wbimanager(self):
+        return self._wbimanager
+
+    @property
+    def session(self):
+        return self._session
 
 
 def default_session():
@@ -31,16 +48,7 @@ def new_apis(
     session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None
 ) -> APIContainer:
     session = session if session else default_session()
-    wbimanager = wbimanager if wbimanager else CachedWbiManager()
+    wbimanager = wbimanager if wbimanager else CachedWbiManager(session)
 
-    container = APIContainer()
-    for compcls in components:
-        setattr(
-            container,
-            compcls.__name__.removesuffix("APIs").lower(),
-            compcls(session=session, wbimanager=wbimanager),
-        )
-    setattr(container, "session", session)
-    setattr(container, "wbimanager", wbimanager)
-    setattr(container, "DEFAULT_HEADERS", HEADERS.copy())
+    container = APIContainer(session=session, wbimanager=wbimanager)
     return container

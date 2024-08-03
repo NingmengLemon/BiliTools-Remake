@@ -1,0 +1,16 @@
+from typing import Any, Literal, Optional
+
+from biliapis.template import APITemplate
+
+class MediaAPIs(APITemplate):
+    def get_detail(
+        self,
+        *,
+        mdid: Optional[int] = None,
+        ssid: Optional[int] = None,
+        epid: Optional[int] = None,
+    ) -> dict[str, Any]: ...
+    def get_section(self, ssid: int) -> dict[str, Any]: ...
+    def get_info(self, mdid: int) -> dict[str, Any]: ...
+    def _get_detail_via_ssid(self, ssid: int) -> dict[str, Any]: ...
+    def _get_detail_via_epid(self, epid: int) -> dict[str, Any]: ...

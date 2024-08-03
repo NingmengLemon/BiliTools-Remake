@@ -1,0 +1,13 @@
+from typing import Any, Literal
+
+from biliapis.template import APITemplate
+
+class MangaAPIs(APITemplate):
+    def get_detail(self, mcid: int) -> dict[str, Any]: ...
+    def get_episode_info(
+        self, epid: int
+    ) -> dict[
+        Literal["comic_title", "short_title", "comic_id", "title"], int | str
+    ]: ...
+    def get_image_index(self, epid: int) -> dict[str, Any]: ...
+    def get_image_token(self, *paths: str) -> list[dict[str, str]]: ...
