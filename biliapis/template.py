@@ -45,13 +45,14 @@ def request_template(
     """
 
     def decorator(
-        func: Callable[..., tuple[str, dict[str, Any]]]
+        func: Callable[..., tuple[str, dict[str, Any]] | str]
     ) -> Callable[..., dict[str, Any] | bytes | str | Any]:
         @functools.wraps(func)
         def wrapper(
             self: APITemplate, *args, **kwargs
         ) -> dict[str, Any] | bytes | str | Any:
-            if isinstance(rv := func(self, *args, **kwargs), tuple):
+            rv = func(self, *args, **kwargs)
+            if isinstance(rv, tuple):
                 url, reqparams = rv
                 if reqparams is None:
                     reqparams = {}
