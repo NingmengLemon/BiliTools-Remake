@@ -1,4 +1,4 @@
-from typing import Optional, Literal
+from typing import Optional
 import re
 
 import requests
@@ -22,19 +22,7 @@ IDS_PATTERNS = (
 
 def extract_ids(
     source: str, session: Optional[requests.Session] = None
-) -> Optional[
-    tuple[
-        str | int,
-        # fmt: off
-        Literal[
-            "auid", "bvid", "avid",
-            "cvid", "mdid", "ssid",
-            "epid", "uid", "mcid",
-            "amid",
-        ],
-        # fmt: on
-    ]
-]:
+) -> Optional[tuple[str | int, str]]:
     """
     根据输入的来源返回各种id
 
