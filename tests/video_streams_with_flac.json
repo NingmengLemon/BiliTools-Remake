@@ -1,0 +1,644 @@
+{
+    "from": "local",
+    "result": "suee",
+    "message": "",
+    "quality": 64,
+    "format": "flv720",
+    "timelength": 264788,
+    "accept_format": "hdflv2,hdflv2,flv,flv720,flv480,mp4",
+    "accept_description": [
+        "超清 4K",
+        "高清 1080P+",
+        "高清 1080P",
+        "高清 720P",
+        "清晰 480P",
+        "流畅 360P"
+    ],
+    "accept_quality": [
+        120,
+        112,
+        80,
+        64,
+        32,
+        16
+    ],
+    "video_codecid": 7,
+    "seek_param": "start",
+    "seek_type": "offset",
+    "dash": {
+        "duration": 265,
+        "minBufferTime": 1.5,
+        "min_buffer_time": 1.5,
+        "video": [
+            {
+                "id": 120,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 2149697,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "hev1.1.6.L153.90",
+                "width": 4094,
+                "height": 2160,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "1:1",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1171",
+                    "indexRange": "1172-1839"
+                },
+                "segment_base": {
+                    "initialization": "0-1171",
+                    "index_range": "1172-1839"
+                },
+                "codecid": 12
+            },
+            {
+                "id": 120,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 2713333,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "avc1.640033",
+                "width": 4094,
+                "height": 2160,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "1:1",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-996",
+                    "indexRange": "997-1664"
+                },
+                "segment_base": {
+                    "initialization": "0-996",
+                    "index_range": "997-1664"
+                },
+                "codecid": 7
+            },
+            {
+                "id": 112,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 837924,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "hev1.1.6.L150.90",
+                "width": 1920,
+                "height": 1012,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "63083:63145",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1175",
+                    "indexRange": "1176-1843"
+                },
+                "segment_base": {
+                    "initialization": "0-1175",
+                    "index_range": "1176-1843"
+                },
+                "codecid": 12
+            },
+            {
+                "id": 112,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 669352,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "avc1.640032",
+                "width": 1920,
+                "height": 1012,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "2035:2037",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1000",
+                    "indexRange": "1001-1668"
+                },
+                "segment_base": {
+                    "initialization": "0-1000",
+                    "index_range": "1001-1668"
+                },
+                "codecid": 7
+            },
+            {
+                "id": 80,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 497218,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "hev1.1.6.L150.90",
+                "width": 1920,
+                "height": 1012,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "63083:63145",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1175",
+                    "indexRange": "1176-1843"
+                },
+                "segment_base": {
+                    "initialization": "0-1175",
+                    "index_range": "1176-1843"
+                },
+                "codecid": 12
+            },
+            {
+                "id": 80,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 141093,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "avc1.640032",
+                "width": 1920,
+                "height": 1012,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "2035:2037",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1000",
+                    "indexRange": "1001-1668"
+                },
+                "segment_base": {
+                    "initialization": "0-1000",
+                    "index_range": "1001-1668"
+                },
+                "codecid": 7
+            },
+            {
+                "id": 64,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 244270,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "hev1.1.6.L120.90",
+                "width": 1280,
+                "height": 674,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "62344:62467",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1176",
+                    "indexRange": "1177-1844"
+                },
+                "segment_base": {
+                    "initialization": "0-1176",
+                    "index_range": "1177-1844"
+                },
+                "codecid": 12
+            },
+            {
+                "id": 64,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 91134,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "avc1.640028",
+                "width": 1280,
+                "height": 674,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "3548:3555",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1000",
+                    "indexRange": "1001-1668"
+                },
+                "segment_base": {
+                    "initialization": "0-1000",
+                    "index_range": "1001-1668"
+                },
+                "codecid": 7
+            },
+            {
+                "id": 32,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 131977,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "hev1.1.6.L120.90",
+                "width": 854,
+                "height": 450,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "10235:10248",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1175",
+                    "indexRange": "1176-1843"
+                },
+                "segment_base": {
+                    "initialization": "0-1175",
+                    "index_range": "1176-1843"
+                },
+                "codecid": 12
+            },
+            {
+                "id": 32,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 47246,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "avc1.64001F",
+                "width": 854,
+                "height": 450,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "2362:2365",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1000",
+                    "indexRange": "1001-1668"
+                },
+                "segment_base": {
+                    "initialization": "0-1000",
+                    "index_range": "1001-1668"
+                },
+                "codecid": 7
+            },
+            {
+                "id": 16,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 84096,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "hev1.1.6.L120.90",
+                "width": 640,
+                "height": 338,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "50429:50379",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1174",
+                    "indexRange": "1175-1842"
+                },
+                "segment_base": {
+                    "initialization": "0-1174",
+                    "index_range": "1175-1842"
+                },
+                "codecid": 12
+            },
+            {
+                "id": 16,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 27569,
+                "mimeType": "video/mp4",
+                "mime_type": "video/mp4",
+                "codecs": "avc1.64001E",
+                "width": 640,
+                "height": 338,
+                "frameRate": "25",
+                "frame_rate": "25",
+                "sar": "2017:2015",
+                "startWithSap": 1,
+                "start_with_sap": 1,
+                "SegmentBase": {
+                    "Initialization": "0-1007",
+                    "indexRange": "1008-1675"
+                },
+                "segment_base": {
+                    "initialization": "0-1007",
+                    "index_range": "1008-1675"
+                },
+                "codecid": 7
+            }
+        ],
+        "audio": [
+            {
+                "id": 30280,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 178358,
+                "mimeType": "audio/mp4",
+                "mime_type": "audio/mp4",
+                "codecs": "mp4a.40.2",
+                "width": 0,
+                "height": 0,
+                "frameRate": "",
+                "frame_rate": "",
+                "sar": "",
+                "startWithSap": 0,
+                "start_with_sap": 0,
+                "SegmentBase": {
+                    "Initialization": "0-933",
+                    "indexRange": "934-1601"
+                },
+                "segment_base": {
+                    "initialization": "0-933",
+                    "index_range": "934-1601"
+                },
+                "codecid": 0
+            },
+            {
+                "id": 30216,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 52761,
+                "mimeType": "audio/mp4",
+                "mime_type": "audio/mp4",
+                "codecs": "mp4a.40.5",
+                "width": 0,
+                "height": 0,
+                "frameRate": "",
+                "frame_rate": "",
+                "sar": "",
+                "startWithSap": 0,
+                "start_with_sap": 0,
+                "SegmentBase": {
+                    "Initialization": "0-943",
+                    "indexRange": "944-1611"
+                },
+                "segment_base": {
+                    "initialization": "0-943",
+                    "index_range": "944-1611"
+                },
+                "codecid": 0
+            },
+            {
+                "id": 30232,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 110471,
+                "mimeType": "audio/mp4",
+                "mime_type": "audio/mp4",
+                "codecs": "mp4a.40.2",
+                "width": 0,
+                "height": 0,
+                "frameRate": "",
+                "frame_rate": "",
+                "sar": "",
+                "startWithSap": 0,
+                "start_with_sap": 0,
+                "SegmentBase": {
+                    "Initialization": "0-933",
+                    "indexRange": "934-1601"
+                },
+                "segment_base": {
+                    "initialization": "0-933",
+                    "index_range": "934-1601"
+                },
+                "codecid": 0
+            }
+        ],
+        "dolby": {
+            "type": 0,
+            "audio": null
+        },
+        "flac": {
+            "display": true,
+            "audio": {
+                "id": 30251,
+                "baseUrl": "(filtered)",
+                "base_url": "(filtered)",
+                "backupUrl": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "backup_url": [
+                    "(filtered)",
+                    "(filtered)"
+                ],
+                "bandwidth": 706587,
+                "mimeType": "audio/mp4",
+                "mime_type": "audio/mp4",
+                "codecs": "fLaC",
+                "width": 0,
+                "height": 0,
+                "frameRate": "",
+                "frame_rate": "",
+                "sar": "",
+                "startWithSap": 0,
+                "start_with_sap": 0,
+                "SegmentBase": {
+                    "Initialization": "0-904",
+                    "indexRange": "905-1572"
+                },
+                "segment_base": {
+                    "initialization": "0-904",
+                    "index_range": "905-1572"
+                },
+                "codecid": 0
+            }
+        }
+    },
+    "support_formats": [
+        {
+            "quality": 120,
+            "format": "hdflv2",
+            "new_description": "4K 超清",
+            "display_desc": "4K",
+            "superscript": "",
+            "codecs": [
+                "avc1.640033",
+                "hev1.1.6.L153.90"
+            ]
+        },
+        {
+            "quality": 112,
+            "format": "hdflv2",
+            "new_description": "1080P 高码率",
+            "display_desc": "1080P",
+            "superscript": "高码率",
+            "codecs": [
+                "avc1.640032",
+                "hev1.1.6.L150.90"
+            ]
+        },
+        {
+            "quality": 80,
+            "format": "flv",
+            "new_description": "1080P 高清",
+            "display_desc": "1080P",
+            "superscript": "",
+            "codecs": [
+                "avc1.640032",
+                "hev1.1.6.L150.90"
+            ]
+        },
+        {
+            "quality": 64,
+            "format": "flv720",
+            "new_description": "720P 高清",
+            "display_desc": "720P",
+            "superscript": "",
+            "codecs": [
+                "avc1.640028",
+                "hev1.1.6.L120.90"
+            ]
+        },
+        {
+            "quality": 32,
+            "format": "flv480",
+            "new_description": "480P 清晰",
+            "display_desc": "480P",
+            "superscript": "",
+            "codecs": [
+                "avc1.64001F",
+                "hev1.1.6.L120.90"
+            ]
+        },
+        {
+            "quality": 16,
+            "format": "mp4",
+            "new_description": "360P 流畅",
+            "display_desc": "360P",
+            "superscript": "",
+            "codecs": [
+                "avc1.64001E",
+                "hev1.1.6.L120.90"
+            ]
+        }
+    ],
+    "high_format": null,
+    "last_play_time": 30000,
+    "last_play_cid": 1196036807,
+    "view_info": null
+}
