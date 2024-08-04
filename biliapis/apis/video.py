@@ -81,10 +81,10 @@ class VideoAPIs(template.APITemplate):
     @checker.check_bilicode()
     @template.request_template()
     def get_player_info(self, cid: int, *, avid=None, bvid=None):
-        '''获取web端播放器的元数据，包括字幕文件
-        
+        """获取web端播放器的元数据，包括字幕文件
+
         要获取字幕文件需要登录（否则字幕列表为空），
-        判断字幕是否是AI生成可以判断URL中是否包含`ai_subtitle`'''
+        判断字幕是否是AI生成可以判断URL中是否包含`ai_subtitle`"""
         params = {"cid": cid}
         params.update(
             utils.remove_none(
@@ -95,3 +95,12 @@ class VideoAPIs(template.APITemplate):
             )
         )
         return VideoAPIs._API_PLAYER, {"params": params}
+
+    @template.request_template(handle="str")
+    def get_danmaku(self, cid):
+        """获取弹幕xml文件"""
+        return f"https://comment.bilibili.com/{cid}.xml"
+
+    @template.request_template(handle="str")
+    def get_danmaku_new(self, cid):
+        return f"https://api.bilibili.com/x/v1/dm/list.so?oid={cid}"

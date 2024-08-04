@@ -69,7 +69,7 @@ def request_template(
                 resp.raise_for_status()
                 match handle:
                     case "str":
-                        return resp.text
+                        return resp.content.decode("utf-8")
                     case "bytes":
                         return resp.content
                     case "raw":
