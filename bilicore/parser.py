@@ -35,7 +35,7 @@ def extract_ids(
         if (req := session.get(url, stream=True, headers=HEADERS)).status_code == 200:
             source = req.url
     for pattern, idname, idtype in ID_PATTERNS:
-        if res := re.search(pattern, source, re.IGNORECASE):
+        if res := re.search(r"(?<![A-Za-z])" + pattern, source, re.IGNORECASE):
             return idtype(res.group(1)), idname
     return None
 

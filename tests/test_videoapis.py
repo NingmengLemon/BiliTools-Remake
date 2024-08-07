@@ -4,6 +4,7 @@ import os
 import pytest
 
 from init import apis, dump_data, SAVEDIR
+from bilicore import downloader
 
 
 def test_get_detail():
@@ -14,6 +15,7 @@ def test_get_detail():
 def test_get_stream():
     streams = apis.video.get_stream_dash(cid=279786, avid=170001)
     dump_data("video_streams.json", streams)
+    downloader.download_common(streams["dash"]["video"][0]["base_url"], os.path.join(SAVEDIR, "vstream.m4s"))
 
 
 def test_get_player():
