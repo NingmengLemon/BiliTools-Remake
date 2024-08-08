@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-from init import apis, dump_data
+from initapis import apis, dump_data
 
 
 def test_get_detail():

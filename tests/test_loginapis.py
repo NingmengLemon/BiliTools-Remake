@@ -5,7 +5,7 @@ import time
 import pytest
 import qrcode
 
-from init import apis, dump_data, SAVEDIR
+from initapis import apis, dump_data, SAVEDIR
 from biliapis import BiliError  # pylint: disable=E0611
 
 

@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from init import apis, dump_data, SAVEDIR
+from initapis import apis, dump_data, SAVEDIR
 from bilicore import downloader
 
 
@@ -27,6 +27,11 @@ def test_get_danmaku():
     cid = 1156509226
     with open(os.path.join(SAVEDIR, "danmaku.xml"), "w+", encoding="utf-8") as fp:
         fp.write(apis.video.get_danmaku(cid))
+
+def test_get_pagelist():
+    avid = 99999999
+    pl = apis.video.get_pagelist(avid=avid)
+    dump_data("video_pagelist.json", pl)
 
 
 if __name__ == "__main__":

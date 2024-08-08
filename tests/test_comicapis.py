@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from init import apis, dump_data, SAVEDIR
+from initapis import apis, dump_data, SAVEDIR
 
 
 def test_get_detail():
