@@ -58,7 +58,6 @@ def select_quality(
     - vq：需求的视频质量，要求基本同上
         - 但是为整数时内容还可以是视频帧高
     - enc：需求的视频编码"""
-    # prepare
     if "dash" not in streams:
         raise TypeError("not dash stream data")
     return _choose_video(vq=vq, streams=streams, enc=enc), _choose_audio(

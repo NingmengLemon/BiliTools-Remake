@@ -35,9 +35,15 @@ class SingleVideoProcess(threading.Thread):
         if self._video_data is None:
             self._video_data = self._apis.video.get_video_detail(**self._id)
         vdata = self._video_data
-        if vdata:
-            assert self._cid in [p["cid"] for p in vdata["pages"]], "wrong cid"
-        player_info = self._apis.video.get_player_info(vdata[""])
+        if self._cid not in [p["cid"] for p in vdata["pages"]]:
+            raise ValueError("wrong cid")
+        player_info = self._apis.video.get_player_info(
+            cid=self._cid, bvid=vdata["bvid"]
+        )
+        if _sub := player_info.get("subtitle", {}).get("subtitles", []):
+            subtitles = _sub
+        else:
+            subtitles = []
 
     def stop(self):
         pass

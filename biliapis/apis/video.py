@@ -20,6 +20,7 @@ class VideoAPIs(template.APITemplate):
         ("https://api.bilibili.com/x/player/playurl", "result"),
     )
     _API_PLAYER = "https://api.bilibili.com/x/player/v2"
+    _API_PAGELIST = "https://api.bilibili.com/x/player/pagelist"
 
     def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
         super().__init__(session, wbimanager)
@@ -104,3 +105,11 @@ class VideoAPIs(template.APITemplate):
     @template.request_template(handle="str")
     def get_danmaku_new(self, cid):
         return f"https://api.bilibili.com/x/v1/dm/list.so?oid={cid}"
+
+    @utils.pick_data()
+    @checker.check_abvid
+    @checker.check_bilicode()
+    @template.request_template()
+    def get_pagelist(self, *, avid=None, bvid=None):
+        params = utils.remove_none({"aid": avid, "bvid": bvid})
+        return VideoAPIs._API_PAGELIST, {"params": params}
