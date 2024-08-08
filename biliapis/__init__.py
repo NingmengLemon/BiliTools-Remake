@@ -1,5 +1,5 @@
 from biliapis.factory import new_apis, APIContainer
-from biliapis import utils, bilicodes
+from biliapis import utils, bilicodes, subtitle
 from biliapis.error import BiliError
 from biliapis import apis
 from biliapis.wbi import CachedWbiManager
@@ -15,5 +15,6 @@ __all__ = [
     "apis",
     "CachedWbiManager",
     "APIContainer",  # for type hints
-    "HEADERS"
+    "HEADERS",
+    "subtitle"
 ]

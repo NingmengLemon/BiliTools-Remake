@@ -36,7 +36,7 @@ def download_common(
     thread.start()
     while thread.is_alive():
         try:
-            time.sleep(0.1)
+            time.sleep(0.05)
             status = thread.observe()
             if hook_func:
                 hook_func(status["size_local"], status["size_remote"])

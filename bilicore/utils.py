@@ -2,6 +2,43 @@ import threading
 import asyncio
 from typing import Callable, Iterable, Mapping, Any, Optional, Union
 import functools
+import subprocess
+
+_FN_REPMAP = {
+    "/": "／",
+    "*": "＊",
+    ":": "：",
+    "\\": "＼",
+    ">": "＞",
+    "<": "＜",
+    "|": "｜",
+    "?": "？",
+    '"': "＂",
+}
+
+
+def call_ffmpeg(*args):
+    cmd = ["ffmpeg", "-loglevel", "quiet", "-nostdin", "-hide_banner"]
+    cmd += args
+    with subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ) as subp:
+        return subp.wait()
+
+
+def merge_avfile(au_file: str, vi_file: str, output_file: str) -> int:
+    """调用ffmpeg进行合流"""
+    return call_ffmpeg(
+        "-i", au_file, "-i", vi_file, "-vcodec", "copy", "-acodec", "copy", output_file
+    )
+
+
+def filename_escape(text: str):
+    for t in list(_FN_REPMAP.keys()):
+        text = text.replace(t, _FN_REPMAP[t])
+    return text
 
 
 class ThreadWithReturn(threading.Thread):

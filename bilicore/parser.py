@@ -101,7 +101,7 @@ def _filter_video_qs(videos: list[dict], vqid: int):
 
 
 def _filter_video_encs(videos: list[dict], enc: Literal["avc", "hevc"]):
-    return [v for v in videos if v["codecs"][:2] == enc[:2]]
+    return [v for v in videos if v["codecs"][:3] == enc[:3]]
 
 
 def _choose_audio(aq: str | int | Literal["max", "min"], streams: dict[str, Any]):
