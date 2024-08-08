@@ -42,6 +42,8 @@ def download_common(
                 hook_func(status["size_local"], status["size_remote"])
         except KeyboardInterrupt:
             thread.stop()
+    if thread.exception is not None:
+        raise thread.exception
 
 
 class DownloadStatus(Enum):

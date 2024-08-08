@@ -1,10 +1,11 @@
-from typing import Literal, Optional, Iterable, Any
+from typing import Literal, Optional, Any
 import os
 import threading
 import functools
 
 from biliapis.utils import remove_none
 from biliapis import APIContainer, bilicodes
+from biliapis import subtitle
 from bilicore import (
     download_common,
     select_quality,
@@ -39,9 +40,19 @@ class SingleVideoProcess(threading.Thread):
         self._aq: str | int = options.get("audio_quality", "max")
         self._sv: Optional[str | Literal["all"]] = options.get("subtitle_lang")
         self._sf: Literal["vtt", "srt", "lrc"] = options.get("subtitle_format", "vtt")
-        self._progress: dict[str, tuple[int, int]] = {}
-
+        self._progress_text = "pending"
+        self.exception: Optional[Exception] = None
+        
     def run(self):
+        try:
+            self._progress_text = "starting"
+            self._worker()
+            self._progress_text = "done"
+        except Exception as e:
+            self.exception = e
+            self._progress_text = "errored"
+
+    def _worker(self):
         if self._video_data is None:
             self._video_data = self._apis.video.get_video_detail(**self._id)
         vdata = self._video_data
@@ -82,9 +93,9 @@ class SingleVideoProcess(threading.Thread):
                     + (f"_P{pindex+1}" if len(cidlist) > 1 else "")
                     + (f"_{ptitle}" if ptitle != title else "")
                     + (
-                        f"_{bilicodes.stream_dash_video_quality.get(vqid)}"
+                        f"_{bilicodes.stream_dash_audio_quality.get(aqid)}"
                         if self._audio_only
-                        else f"_{bilicodes.stream_dash_audio_quality.get(aqid)}"
+                        else f"_{bilicodes.stream_dash_video_quality.get(vqid)}"
                     )
                 )
                 + (
@@ -95,29 +106,44 @@ class SingleVideoProcess(threading.Thread):
                 )
             ),
         )
+        if os.path.isfile(finalfile):
+            self._progress_text = "skipped"
+            return
         # 字幕
-        subfile = finalfile + ".{lan}.{fmt}"
-        match self._sv:
-            case "all":
-                pass
-            case None:
-                pass
-            case _:
-                pass
+        subfile = os.path.join(self._savedir, finalfile + ".{lan}" + f".{self._sf}")
+        if self._sv is not None:
+            for sub in subtitles:
+                if self._sv == "all" or self._sv.lower() in sub["lan"].lower():
+                    self._dsubt(
+                        "https:" + sub["subtitle_url"],
+                        subfile.format(lan=sub["lan"]),
+                        self._sf,
+                    )
         vurls = [vstream["base_url"]] + vstream["backup_url"]
         aurls = [astream["base_url"]] + astream["backup_url"]
         # 我错了我再也不玩多线程了 😭
-        vhook = functools.partial(self._progress_hook, "video")
-        ahook = functools.partial(self._progress_hook, "audio")
+        ahook = functools.partial(self._progress_hook, name="audio")
         self._dstream(aurls, atmpfile, ahook)
         if self._audio_only:
             call_ffmpeg("-i", atmpfile, finalfile)
             os.remove(atmpfile)
             return
+        vhook = functools.partial(self._progress_hook, name="video")
         self._dstream(vurls, vtmpfile, vhook)
         merge_avfile(atmpfile, vtmpfile, finalfile)
         os.remove(atmpfile)
         os.remove(vtmpfile)
+
+    def _dsubt(self, url, file, fmt: Literal["vtt", "srt", "lrc"]):
+        subt = self._apis.session.get(url, headers=self._apis.DEFAULT_HEADERS).json()
+        with open(file, "w+", encoding="utf-8") as f:
+            match fmt:
+                case "lrc":
+                    f.write(subtitle.bcc2lrc(subt))
+                case "srt":
+                    f.write(subtitle.bcc2srt(subt))
+                case "vtt":
+                    f.write(subtitle.bcc2vtt(subt))
 
     def _dstream(self, urls, file, hook):
         for i, u in enumerate(urls):
@@ -134,28 +160,12 @@ class SingleVideoProcess(threading.Thread):
             else:
                 return
 
-    def _progress_hook(self, name: str, curr: int, total: int):
-        self._progress[name] = (curr, total)
-
-    def observe(self):
-        pgr = self._progress.copy()
-        return (
-            sum(c / t * 100 for c, t in pgr) / len(pgr),
-            sum(c for c, _ in pgr),
-            sum(t for _, t in pgr),
+    def _progress_hook(self, curr: Optional[int], total: Optional[int], name: str):
+        self._progress_text = (
+            f"{name}: --%"
+            if curr is None or total is None
+            else f"{name}: {curr/total*100:.2f}%"
         )
 
-
-def process(
-    mode: Literal["video", "media", "manga", "audio", "tbd"], savedir: str, **kwargs
-):
-    """ """
-    pass
-
-
-def _process_video(savedir: str, **kwargs):
-    pass
-
-
-def _process_media(savedir: str, **kwargs):
-    pass
+    def observe(self):
+        return self._progress_text
