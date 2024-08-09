@@ -226,7 +226,6 @@ error_code = {
     12009: "评论区Type不合法",
     19002003: "房间信息不存在",
     60004: "直播间不存在",
-    "NaN": "未知错误",
 }
 
 stream_dash_video_quality = {
@@ -270,9 +269,22 @@ stream_flv_video_quality = {
 
 stream_flv_video_quality_ = {v: k for k, v in stream_flv_video_quality.items()}
 
-media_type = {1: "番剧", 2: "电影", 3: "纪录片", 4: "国创", 5: "电视剧", 7: "综艺"}
+media_type = {
+    1: "番剧",
+    2: "电影",
+    3: "纪录片",
+    4: "国创",
+    5: "电视剧",
+    7: "综艺",
+}
 
-stream_audio_quality = {-1: "192K试听", 0: "128K", 1: "192K", 2: "320K", 3: "FLAC"}
+stream_audio_quality = {
+    -1: "192K_Trial",
+    0: "128K",
+    1: "192K",
+    2: "320K",
+    3: "FLAC",
+}
 
 stream_audio_quality_ = {v: k for k, v in stream_audio_quality.items()}
 
@@ -428,4 +440,8 @@ media_area_codes = {
     55: "哈萨克斯坦",
 }
 
-stream_video_codec_codes = {7: "AVC", 12: "HEVC", 13: "AV1"}
+stream_video_codec_codes = {
+    7: "AVC",
+    12: "HEVC",
+    13: "AV1",
+}
