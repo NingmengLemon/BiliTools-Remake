@@ -7,14 +7,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from biliapis.utils import remove_none
 from biliapis import APIContainer, bilicodes
 from biliapis import subtitle
-from bilicore import (
-    download_common,
-    select_quality,
-)
+from bilicore.downloader import download_common
+from bilicore.parser import select_quality
 from bilicore.utils import filename_escape, merge_avfile, call_ffmpeg
 
 
-class ProcessUtilsMixin:
+class ThreadUtilsMixin:
     @staticmethod
     def _dstream(
         urls: list[str],
@@ -42,8 +40,19 @@ class ProcessUtilsMixin:
         with open(file, "wb+") as fp:
             fp.write(data)
 
+    @staticmethod
+    def _run(self):  # pylint: disable=W0211
+        # 这个写法有点傻逼的
+        try:
+            self._progress_text = "starting"
+            self._worker()
+            self._progress_text = "done"
+        except Exception as e:
+            self.exception = e
+            self._progress_text = "errored"
 
-class SingleVideoProcess(threading.Thread, ProcessUtilsMixin):
+
+class SingleVideoThread(threading.Thread, ThreadUtilsMixin):
     def __init__(
         self,
         apis: APIContainer,
@@ -74,13 +83,7 @@ class SingleVideoProcess(threading.Thread, ProcessUtilsMixin):
         self.exception: Optional[Exception] = None
 
     def run(self):
-        try:
-            self._progress_text = "starting"
-            self._worker()
-            self._progress_text = "done"
-        except Exception as e:
-            self.exception = e
-            self._progress_text = "errored"
+        self._run(self)
 
     def _worker(self):
         if self._video_data is None:
@@ -151,7 +154,6 @@ class SingleVideoProcess(threading.Thread, ProcessUtilsMixin):
                     )
         vurls = [vstream["base_url"]] + vstream["backup_url"]
         aurls = [astream["base_url"]] + astream["backup_url"]
-        # 我错了我再也不玩多线程了 😭
         ahook = functools.partial(self._progress_hook, name="audio")
         self._dstream(aurls, atmpfile, ahook, apis=self._apis)
         if self._audio_only:
@@ -195,7 +197,7 @@ class SingleVideoProcess(threading.Thread, ProcessUtilsMixin):
         return self._progress_text
 
 
-class SingleAudioProcess(threading.Thread, ProcessUtilsMixin):
+class SingleAudioThread(threading.Thread, ThreadUtilsMixin):
     def __init__(self, apis: APIContainer, auid, savedir, **options) -> None:
         super().__init__(daemon=True)
         self._apis = apis
@@ -252,13 +254,7 @@ class SingleAudioProcess(threading.Thread, ProcessUtilsMixin):
             os.remove(tmpfile)
 
     def run(self):
-        try:
-            self._progress_text = "starting"
-            self._worker()
-            self._progress_text = "done"
-        except Exception as e:
-            self.exception = e
-            self._progress_text = "errored"
+        self._run(self)
 
     def _progress_hook(self, curr: Optional[int], total: Optional[int], name: str):
         self._progress_text = (
@@ -271,7 +267,7 @@ class SingleAudioProcess(threading.Thread, ProcessUtilsMixin):
         return self._progress_text
 
 
-class SingleMangaChapterProcess(threading.Thread, ProcessUtilsMixin):
+class SingleMangaChapterThread(threading.Thread, ThreadUtilsMixin):
     def __init__(self, apis: APIContainer, epid: int, savedir: str, **options) -> None:
         super().__init__(daemon=True)
         self._apis = apis
@@ -313,15 +309,9 @@ class SingleMangaChapterProcess(threading.Thread, ProcessUtilsMixin):
             for i, future in enumerate(as_completed(futures)):
                 try:
                     future.result()
-                    self._progress_text = f"{i} / {len(urls)}"
+                    self._progress_text = f"{i+1} / {len(urls)}"
                 except Exception as e:
                     self.exception = e
 
     def run(self):
-        try:
-            self._progress_text = "starting"
-            self._worker()
-            self._progress_text = "done"
-        except Exception as e:
-            self.exception = e
-            self._progress_text = "errored"
+        self._run(self)

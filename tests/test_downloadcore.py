@@ -6,14 +6,14 @@ from bilicore import core
 
 
 def test_commonvideo():
-    p = core.SingleVideoProcess(apis, 171776208, avid=99999999, savedir=SAVEDIR)
+    p = core.SingleVideoThread(apis, 171776208, avid=99999999, savedir=SAVEDIR)
     p.start()
     p.join()
     assert p.exception is None, p.exception
 
 
 def test_commonvideo_audio():
-    p = core.SingleVideoProcess(
+    p = core.SingleVideoThread(
         apis, 171776208, avid=99999999, savedir=SAVEDIR, audio_only=True
     )
     p.start()
@@ -22,14 +22,14 @@ def test_commonvideo_audio():
 
 
 def test_audio():
-    p = core.SingleAudioProcess(apis, 37787, SAVEDIR)
+    p = core.SingleAudioThread(apis, 37787, SAVEDIR)
     p.start()
     p.join()
     assert p.exception is None, p.exception
 
 
 def test_manga():
-    p = core.SingleMangaChapterProcess(apis, 806132, SAVEDIR)
+    p = core.SingleMangaChapterThread(apis, 806132, SAVEDIR)
     p.start()
     p.join()
     assert p.exception is None, p.exception

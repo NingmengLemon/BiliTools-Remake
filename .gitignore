@@ -163,3 +163,5 @@ cython_debug/
 
 # may contain personal info and login token
 samples/
+
+.VSCodeCounter/
