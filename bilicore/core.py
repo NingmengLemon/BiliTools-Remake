@@ -75,7 +75,7 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin):
         self._streams: Optional[dict[str, Any]] = options.get("stream_data")
         self._player_info: Optional[dict[str, Any]] = options.get("player_info")
         self._vq: str | int = options.get("video_quality", "max")
-        self._vc: Literal["avc", "hevc"] = options.get("video_encoding", "avc")
+        self._vc: Literal["avc", "hevc"] = options.get("video_codec", "avc")
         self._aq: str | int = options.get("audio_quality", "max")
         self._sv: Optional[str | Literal["all"]] = options.get("subtitle_lang")
         self._sf: Literal["vtt", "srt", "lrc"] = options.get("subtitle_format", "vtt")

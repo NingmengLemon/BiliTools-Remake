@@ -111,7 +111,9 @@ class LoginAPIs(template.APITemplate):
         }
 
     def refresh_cookies_flow(self, refresh_token=None):
-        """会在session中小小地塞一个refresh_token，不过没问题都是检查了的"""
+        """会在session中小小地塞一个refresh_token，不过没问题都是检查了的
+        
+        ~~没有测试过~~"""
         if not refresh_token:
             if hasattr(self._session, "bili_refresh_token"):
                 refresh_token = self._session.bili_refresh_token

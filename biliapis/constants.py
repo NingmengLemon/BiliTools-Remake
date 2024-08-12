@@ -1,3 +1,5 @@
+VERSION = "2.0.0"
+
 # import 之后请务必 copy 一下再做修改
 
 HEADERS = {
