@@ -68,7 +68,7 @@ def parse_arguments():
     parser.add_argument(
         "--index",
         type=str,
-        help="从0始计的分P索引，可使用半角逗号分隔多个。省略时指定所有分P。",
+        help="从1始计的分P索引，可使用半角逗号分隔多个。省略时指定所有分P。",
     )
 
     # 是否下载歌词

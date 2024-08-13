@@ -102,7 +102,7 @@ class App(CliCore):
                 self._common_video_process(savedir, **{idn: idc}, **remove_none(vars(args)))  # type: ignore[misc]
             case "mdid" | "ssid" | "epid":
                 # media
-                pass
+                self._media_process(savedir, **{idn: idc}, **remove_none(vars(args)))  # type: ignore[misc]
             case "auid":
                 # audio
                 pass
@@ -115,4 +115,3 @@ class App(CliCore):
             case _:
                 # not supported
                 print(f"source type {idn}={idc} not supported yet :(")
-logging.getLogger

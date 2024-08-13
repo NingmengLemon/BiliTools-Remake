@@ -12,11 +12,11 @@ ID_PATTERNS = (
     (r"av([0-9]+)", "avid", int),
     (r"au([0-9]+)", "auid", int),
     (r"cv([0-9]+)", "cvid", int),
+    (r"mc([0-9]+)", "mcid", int),
     (r"md([0-9]+)", "mdid", int),
     (r"ss([0-9]+)", "ssid", int),
     (r"ep([0-9]+)", "epid", int),
     (r"uid([0-9]+)", "uid", int),
-    (r"mc([0-9]+)", "mcid", int),
     (r"am([0-9]+)", "amid", int),
 )
 

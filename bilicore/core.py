@@ -111,6 +111,10 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         "stream_data",
         "video_data",
         "player_info",
+        # 更正字段，仅影响输出文件的名称
+        "title",
+        "pindex",
+        "ptitle",
     )
 
     def __init__(
@@ -144,6 +148,10 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         self._streams: Optional[dict[str, Any]] = options.get("stream_data")
         self._player_info: Optional[dict[str, Any]] = options.get("player_info")
 
+        self._correct_title: Optional[str] = options.get("title")
+        self._correct_pindex: Optional[int] = options.get("pindex")
+        self._correct_ptitle: Optional[str] = options.get("ptitle")
+
     def run(self):
         self._run_wrapped(self._worker)
 
@@ -176,8 +184,12 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         if no_audio and self._audio_only:
             self._report_progress(pgr_text="terminated: no audio stream to download")
             return
-        title = vdata["title"]
-        ptitle = vdata["pages"][pindex]["part"]
+        title = vdata["title"] if self._correct_title is None else self._correct_title
+        ptitle = (
+            vdata["pages"][pindex]["part"]
+            if self._correct_ptitle is None
+            else self._correct_ptitle
+        )
         vqid = vstream["id"]
         aqid = -1 if no_audio else astream["id"]
         is_lossless = aqid == 30251
@@ -197,13 +209,18 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             filename_escape(
                 (
                     f"{title}"
-                    + (f"_P{pindex+1}" if len(cidlist) > 1 else "")
-                    + (f"_{ptitle}" if ptitle != title else "")
+                    + (
+                        (f"_P{pindex+1}" if len(cidlist) > 1 else "")
+                        if self._correct_pindex is None
+                        else f"_P{self._correct_pindex}"
+                    )
+                    + (f"_{ptitle}" if ptitle else "")
                     + (
                         f"_{bilicodes.stream_dash_audio_quality.get(aqid)}"
                         if self._audio_only
                         else f"_{bilicodes.stream_dash_video_quality.get(vqid)}"
                     )
+                    # 孩子们，三目运算符并不好玩😡
                 )
                 + (
                     (".flac" if is_lossless else ".mp3")
@@ -323,7 +340,7 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         if os.path.isfile(finalfile):
             self._report_progress("skipped")
             return
-        
+
         self._report_progress(pgr_text="fetching stream")
         self._dstream(
             stream["cdns"],

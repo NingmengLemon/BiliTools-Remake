@@ -17,14 +17,16 @@ class CliCore:
         self, savedir: Optional[str], *, avid=None, bvid=None, **options
     ):
         video_data = self._apis.video.get_video_detail(avid=avid, bvid=bvid)
-        indexs = utils.parse_index_option(options.get("index"))
-        printers.print_video_info(video_data, indexs)
+        printers.print_video_info(video_data)
+        pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
         if not savedir:
             return
         pages = (
             video_data["pages"]
-            if indexs is None
-            else [video_data["pages"][i] for i in indexs]
+            if pindexs is None
+            else [
+                page for i, page in enumerate(video_data["pages"]) if i + 1 in pindexs
+            ]
         )
         utils.run_threads(
             [
@@ -40,5 +42,13 @@ class CliCore:
             ]
         )
 
-    def _media_process(self, **options):
-        pass
+    def _media_process(
+        self, savedir: Optional[str], *, ssid=None, mdid=None, epid=None, **options
+    ):
+        media_detail = self._apis.media.get_detail(mdid=mdid, ssid=ssid, epid=epid)
+        printers.print_media_detail(media_detail)
+        pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
+        if not savedir:
+            return
+        eps = []
+        # TODO: 继续写
