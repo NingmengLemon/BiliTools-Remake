@@ -5,7 +5,7 @@ from requests import Session, adapters
 from biliapis.wbi import CachedWbiManager
 
 # collect components
-from biliapis.constants import HEADERS
+from biliapis.constants import HEADERS, VERSION
 from . import apis
 
 __all__ = ["APIContainer", "default_session", "new_apis"]
@@ -14,8 +14,10 @@ components = [v for k, v in vars(apis).items() if k.endswith("APIs")]
 
 
 class APIContainer:
+    VERSION = VERSION
+    DEFAULT_HEADERS: dict[str, str] = HEADERS.copy()
+
     def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
-        self.DEFAULT_HEADERS: dict[str, str] = HEADERS.copy()
         self._session = session
         self._wbimanager = wbimanager
         for compcls in components:

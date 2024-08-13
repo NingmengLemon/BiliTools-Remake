@@ -124,7 +124,7 @@ class DownloadThread(threading.Thread):
                 raise RuntimeError("range operation not supported")
             self._status["size_remote"] = local_size + content_length
             with open(tmpfilepath, "ab+") as fp:
-                for chunk in resp.iter_content(chunk_size=4096):
+                for chunk in resp.iter_content(chunk_size=2**16):
                     # 暂停与终止
                     if self._stop_event.is_set():
                         return

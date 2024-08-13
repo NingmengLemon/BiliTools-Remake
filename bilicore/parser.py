@@ -105,7 +105,9 @@ def _filter_video_encs(videos: list[dict], enc: Literal["avc", "hevc"]):
 
 
 def _choose_audio(aq: str | int | Literal["max", "min"], streams: dict[str, Any]):
-    audios: list[dict] = streams["dash"]["audio"]
+    audios: Optional[list[dict]] = streams["dash"]["audio"]
+    if not audios:
+        return None
     has_flac = False
     if flac := streams["dash"].get("flac"):
         if flac := flac.get("audio"):

@@ -1,6 +1,9 @@
 import argparse
+import logging
 
-from bilicli.core import main_process
+from bilicli.app import App
+
+LOGFILE_PATH = "./run.log"
 
 
 def parse_arguments():
@@ -21,7 +24,7 @@ def parse_arguments():
 
     #
     parser.add_argument("--login", action="store_true", help="进行登录流程")
-    
+
     parser.add_argument("--logout", action="store_true", help="进行登出流程")
 
     # 媒体来源，唯一必选参数
@@ -29,6 +32,8 @@ def parse_arguments():
 
     # 是否只下载音频
     parser.add_argument("--audio-only", action="store_true", help="只抽取视频的音轨")
+
+    parser.add_argument("--dry-run", action="store_true", help="只打印信息不进行下载")
 
     # 字幕语种
     parser.add_argument(
@@ -60,7 +65,11 @@ def parse_arguments():
     parser.add_argument("--audio-quality", type=str, help="指定音频质量")
 
     # 分P索引
-    parser.add_argument("--index", type=str, help="分P索引，可使用半角逗号分隔多个")
+    parser.add_argument(
+        "--index",
+        type=str,
+        help="从0始计的分P索引，可使用半角逗号分隔多个。省略时指定所有分P。",
+    )
 
     # 是否下载歌词
     parser.add_argument(
@@ -72,7 +81,7 @@ def parse_arguments():
 
     # 输出路径，唯一必选参数
     parser.add_argument(
-        "-o", "--output", type=str, help="指定输出路径，若未指定则 dry run"
+        "-o", "--output", type=str, help="指定输出路径，若未指定则仅打印信息"
     )
 
     return parser.parse_args()
@@ -80,7 +89,21 @@ def parse_arguments():
 
 def boot():
     args = parse_arguments()
-    main_process(args)
+    logger = logging.getLogger()
+    handler = logging.FileHandler(LOGFILE_PATH, mode="w+", encoding="utf-8")
+    handler.setFormatter(
+        logging.Formatter(
+            fmt="%(asctime)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+    )
+    logger.addHandler(handler)
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+        print("-- Debug Enabled --")
+        logging.debug("args: %s", vars(args))
+    app = App(args)
+    app.run()
 
 
 if __name__ == "__main__":

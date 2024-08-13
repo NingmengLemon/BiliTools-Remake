@@ -5,6 +5,7 @@ from . import apis
 
 class APIContainer:
     DEFAULT_HEADERS: dict[str, str]
+    VERSION: str
     wbimanager: CachedWbiManager
     session: Session
 

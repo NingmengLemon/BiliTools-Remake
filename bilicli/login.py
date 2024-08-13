@@ -4,6 +4,7 @@ import time
 import qrcode
 
 from biliapis import APIContainer, BiliError
+from bilicli.printers import print_login_info
 
 
 def get_login_info_noexc(apis: APIContainer):
@@ -27,15 +28,7 @@ def logout_process(apis: APIContainer):
 def login_process(apis: APIContainer):
     if _ := get_login_info_noexc(apis):
         print("已经登录过了！以下是用户信息：")
-        print(
-            """昵称\t{uname}
-UID\t{mid}
-头像\t{face}
-硬币\t{money} 个
-            """.format(
-                **_
-            )
-        )
+        print_login_info(_)
         return
 
     try:
