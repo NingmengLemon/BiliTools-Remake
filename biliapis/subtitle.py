@@ -85,11 +85,15 @@ def bcc2vtt(data: dict[str, Any]) -> str:
 
 def bcc2lrc(data: dict[str, Any]) -> str:
     lrc: list[str] = []
-    for block in data["body"]:
+    body = data["body"]
+    num = len(body)
+    for i, block in enumerate(body):
         timetag_s = "[%s] " % (sec2time(block["from"], "lrc"))
-        timetag_e = "[%s] " % (sec2time(block["to"], "lrc"))
         lrc += [timetag_s + line for line in block["content"].split("\n")]
-        lrc.append(timetag_e)
+        if i + 1 < num:
+            if body[i + 1]["from"] < (_ := block["to"]):
+                timetag_e = "[%s] " % (sec2time(_, "lrc"))
+                lrc.append(timetag_e)
     return "\n".join(lrc)
 
 
