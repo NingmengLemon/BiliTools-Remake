@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from biliapis import APIContainer
 from bilicore.core import SingleVideoThread
@@ -18,16 +18,14 @@ class CliCore:
     ):
         video_data = self._apis.video.get_video_detail(avid=avid, bvid=bvid)
         printers.print_video_info(video_data)
-        pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
+        pindexs = set(utils.parse_index_option(options.get("index")))  # 从1始计
         if not savedir:
             return
-        pages = (
-            video_data["pages"]
-            if pindexs is None
-            else [
-                page for i, page in enumerate(video_data["pages"]) if i + 1 in pindexs
-            ]
-        )
+        pages = [
+            page
+            for i, page in enumerate(video_data["pages"])
+            if i + 1 in pindexs or not pindexs
+        ]
         utils.run_threads(
             [
                 SingleVideoThread(
@@ -47,8 +45,38 @@ class CliCore:
     ):
         media_detail = self._apis.media.get_detail(mdid=mdid, ssid=ssid, epid=epid)
         printers.print_media_detail(media_detail)
-        pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
         if not savedir:
             return
-        eps = []
-        # TODO: 继续写
+        pindexs = set(utils.parse_index_option(options.get("index")))  # 从1始计
+        # 超出正片分P索引的作为番外处理，但不指定索引则还是只处理正片
+        eps = media_detail.get("episodes", [])
+        eps_to_handle: list[tuple[int, dict[str, Any]]] = [
+            (i + 1, ep) for i, ep in enumerate(eps) if i + 1 in pindexs or not pindexs
+        ]
+        offset = len(eps)
+        if (secs := media_detail.get("section", [])) and pindexs:
+            for sec in secs:
+                eps = sec.get("episodes", [])
+                for i, ep in enumerate(eps):
+                    if (reali := i + 1 + offset) in pindexs:
+                        eps_to_handle.append((reali, ep))
+                offset += len(eps)
+        utils.run_threads(
+            [
+                SingleVideoThread(
+                    self._apis,
+                    cid=ep["cid"],
+                    bvid=ep["bvid"],
+                    savedir=savedir,
+                    **options,
+                    title=media_detail["season_title"],
+                    pindex=i,
+                    ptitle=utils.generate_media_ptitle(**ep, i=i),
+                )
+                for i, ep in eps_to_handle
+            ]
+        )
+
+    def _manga_process(self, savedir: Optional[str], *, mcid: int, **options):
+        # TODO: write this
+        return NotImplemented

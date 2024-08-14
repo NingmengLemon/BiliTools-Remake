@@ -1,4 +1,6 @@
-from typing import Any, Sequence, Optional
+from typing import Any, Optional
+
+from bilicli.utils import generate_media_ptitle
 
 
 def print_login_info(info: dict[str, Any]):
@@ -28,7 +30,7 @@ av{aid} / {bvid}
     pages = info["pages"]
     print("%d Part(s) in total" % (len(pages)))
     print(
-        *["P{page:<4d} cID{cid:<12d} {part}".format(**page) for page in pages],
+        *["P{page:<4d} cID{cid:<16d} {part}".format(**page) for page in pages],
         sep="\n",
     )
     print()
@@ -57,15 +59,32 @@ Title   {season_title}
 ss{season_id} / md{media_id}
 Staff:
 {actors}
-""".format(**detail)
+""".format(
+            **detail
+        )
     )
-    eps = detail["episodes"]
-    if eps:
-        print()
+    # 正片
+    print("\nMain Episode(s):")
+    main_eps = detail.get("episodes", [])
+    _print_media_episodes(main_eps)
+    offset = len(main_eps)
+    if secs := detail.get("section"):
+        for sec in secs:
+            print("\nSection {title}:".format(**sec))
+            eps = sec.get("episodes", [])
+            _print_media_episodes(eps, pindex_offset=offset)
+            offset += len(eps)
+
+
+def _print_media_episodes(eplist: Optional[list[dict[str, Any]]], pindex_offset=0):
+    if eplist:
         print(
             *[
-                "P{i:<4d} epID{ep_id:<8d} {long_title}".format(i=i + 1, **ep)
-                for i, ep in enumerate(eps)
+                (
+                    "P{i:<4d} ep{ep_id:<8d}".format(i=i + 1 + pindex_offset, **ep)
+                    + f" {generate_media_ptitle(**ep, i=i + 1 + pindex_offset)}"
+                )
+                for i, ep in enumerate(eplist)
             ],
             sep="\n",
         )
