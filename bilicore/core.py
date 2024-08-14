@@ -17,6 +17,7 @@ class ThreadProgressMixin:
         self.__curr = 0
         self.__total = 0
         self.__progress_text = ""
+        self.__progress_name = ""
         self.__report_lock = threading.Lock()
         self.__exceptions: list[Exception] = []
         self._report_progress(0, 0, "pending")
@@ -26,14 +27,17 @@ class ThreadProgressMixin:
         curr: Optional[int] = None,
         total: Optional[int] = None,
         pgr_text: Optional[str] = None,
+        pgr_name: Optional[str] = None,
     ):
         with self.__report_lock:
-            if curr is not None:
+            if isinstance(curr, int):
                 self.__curr = curr
-            if total is not None:
+            if isinstance(total, int):
                 self.__total = total
-            if pgr_text is not None:
+            if isinstance(pgr_text, str):
                 self.__progress_text = pgr_text
+            if isinstance(pgr_name, str):
+                self.__progress_name = pgr_name
 
     def _report_exception(self, exc: Exception):
         with self.__report_lock:
@@ -41,7 +45,14 @@ class ThreadProgressMixin:
 
     def observe(self):
         with self.__report_lock:
-            return self.__curr, self.__total, self.__progress_text
+            return (
+                self.__curr,
+                self.__total,
+                (
+                    (f"{self.__progress_name} - " if self.__progress_name else "")
+                    + f"{self.__progress_text}"
+                ),
+            )
 
     @property
     def exceptions(self):
@@ -165,10 +176,13 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             raise ValueError("wrong cid")
         cid = self._cid
         pindex = cidlist.index(cid)
+        self._report_progress(
+            pgr_name=f"P{pindex+1 if self._correct_pindex is None else self._correct_pindex}"
+        )
         bvid = vdata["bvid"]
         player_info = self._apis.video.get_player_info(cid=cid, bvid=bvid)
-        if _sub := player_info.get("subtitle", {}).get("subtitles", []):
-            subtitles = _sub
+        if _ := player_info.get("subtitle", {}).get("subtitles", []):
+            subtitles = _
         else:
             subtitles = []
         streams = (
@@ -214,7 +228,7 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
                         if self._correct_pindex is None
                         else f"_P{self._correct_pindex}"
                     )
-                    + (f"_{ptitle}" if ptitle else "")
+                    + (f"_{ptitle}" if ptitle != title or self._correct_ptitle else "")
                     + (
                         f"_{bilicodes.stream_dash_audio_quality.get(aqid)}"
                         if self._audio_only
@@ -231,10 +245,10 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             ),
         )
         if os.path.isfile(finalfile):
-            self._report_progress("skipped: final file already exists")
+            self._report_progress(pgr_text="skipped: file already exists")
             return
         # 字幕
-        subfile = os.path.join(self._savedir, finalfile + ".{lan}" + f".{self._sf}")
+        subfile = os.path.join(self._savedir, os.path.split(finalfile)[1] + ".{lan}" + f".{self._sf}")
         if self._sv is not None:
             self._report_progress(pgr_text="fetching subtitle")
             for sub in subtitles:
@@ -245,12 +259,10 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
                         self._sf,
                     )
         vurls = [vstream["base_url"]] + vstream["backup_url"]
-        self._report_progress(pgr_text="fetching stream")
+        self._report_progress(pgr_text="audio stream")
         if not no_audio:
             aurls = [astream["base_url"]] + astream["backup_url"]
-            ahook = self._progress_hook
-
-            self._dstream(aurls, atmpfile, ahook, apis=self._apis)
+            self._dstream(aurls, atmpfile, self._progress_hook, apis=self._apis)
         # 仅音轨的分岔
         if self._audio_only:
             if is_lossless:
@@ -261,7 +273,7 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
                     "-i",
                     atmpfile,
                     "-b:a",
-                    bilicodes.stream_dash_audio_quality.get(aqid).lower(),
+                    bilicodes.stream_dash_audio_quality.get(aqid, "192k").lower(),
                     finalfile,
                 )
                 os.remove(atmpfile)
@@ -272,6 +284,7 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             self._progress_hook,
             offset=(os.path.getsize(atmpfile) if os.path.isfile(atmpfile) else 0),
         )
+        self._report_progress(pgr_text="video stream")
         self._dstream(vurls, vtmpfile, vhook, apis=self._apis)
         self._report_progress(pgr_text="merging")
         if no_audio:
@@ -318,6 +331,7 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         self._report_progress(pgr_text="collecting data")
         info = self._info if self._info else self._apis.audio.get_info(self._auid)
         auid = info["id"]
+        self._report_progress(pgr_name=f"au{auid}")
         stream = self._apis.audio.get_stream(auid=auid, quality=self._quality)
         is_lossless = stream["type"] == 3
         tmpfile = os.path.join(
@@ -338,7 +352,7 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         if (cover := info.get("cover")) and self._need_cover:
             self._dfile(cover, finalfile + os.path.splitext(cover)[1], self._apis)
         if os.path.isfile(finalfile):
-            self._report_progress("skipped")
+            self._report_progress(pgr_text="skipped")
             return
 
         self._report_progress(pgr_text="fetching stream")
@@ -382,7 +396,7 @@ class SingleMangaChapterThread(threading.Thread, ThreadUtilsMixin, ThreadProgres
         self._ep_data: Optional[dict[str, Any]] = options.get("ep_data")
 
     def _worker(self):
-        self._report_progress(pgr_text="collecting data")
+        self._report_progress(pgr_text="collecting data", pgr_name=f"ep{self._epid}")
         epinfo = (
             self._ep_data
             if self._ep_data

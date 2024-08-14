@@ -64,7 +64,7 @@ class DownloadThread(threading.Thread):
         end_byte: Optional[int] = None,
         **kwargs,
     ) -> None:
-        super().__init__(daemon=False)
+        super().__init__(daemon=True)
         self._url = url
         self._filepath = filepath
         self._session = session if session else requests.Session()
@@ -219,7 +219,7 @@ class MultiThreadDownloader(threading.Thread):
         threadnum: int = 8,
         **kwargs,
     ) -> None:
-        super().__init__(daemon=False)
+        super().__init__(daemon=True)
         self._url = url
         self._filepath = filepath
         self._threadnum = threadnum
