@@ -37,9 +37,12 @@ def update_progress(pgrbar: tqdm, thread: WorkerThread):
 
 
 def run_thread_with_tqdm(
-    thread: WorkerThread, pos_assigner: BarPosAssigner, interval=0.05, unit="B"
+    thread: WorkerThread,
+    pos_assigner: Optional[BarPosAssigner] = None,
+    interval=0.05,
+    unit="B",
 ):
-    pos = pos_assigner.get()
+    pos = pos_assigner.get() if pos_assigner else None
     with tqdm(
         unit=unit, unit_scale=True, unit_divisor=1024, position=pos, leave=False
     ) as pgrbar:
@@ -48,7 +51,7 @@ def run_thread_with_tqdm(
             update_progress(pgrbar, thread)
             time.sleep(interval)
         update_progress(pgrbar, thread)
-    if not thread.exceptions:
+    if not thread.exceptions and pos_assigner:
         pos_assigner.put(pos)
     return thread
 
@@ -72,24 +75,24 @@ def run_threads(threads: Sequence[WorkerThread], max_worker=4, unit="B"):
             if _ := thread.exceptions:
                 exceptions += _
                 for e in _:
-                    logging.error("exception from child thread: %s", e)
+                    logging.error("exception from child thread: %s", e, exc_info=True)
     return exceptions
 
 
 def parse_index_option(index_s: Optional[str]) -> set[int]:
+    result: set[int] = set()
     if not index_s:
-        return set()
-
-    result: list[int] = []
+        return result
     parts = index_s.split(",")
+
     for part in parts:
         if "-" in part:
             start, end = map(int, part.split("-"))
-            result.extend(range(start, end + 1))
+            result.update(range(start, end + 1))
         else:
-            result.append(int(part))
+            result.add(int(part))
 
-    return set(result)
+    return result
 
 
 def generate_media_ptitle(title, long_title, i=-1, **_):

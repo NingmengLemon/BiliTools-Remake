@@ -7,7 +7,10 @@ class AudioAPIs(template.APITemplate):
     _API_INFO = "https://www.bilibili.com/audio/music-service-c/web/song/info"
     _API_STREAM = "https://api.bilibili.com/audio/music-service-c/url"
     _API_TAGS = "https://www.bilibili.com/audio/music-service-c/web/tag/song"
-    _API_PLAYMENU = "https://www.bilibili.com/audio/music-service-c/web/song/of-menu"
+    _API_PLAYMENU_CONTENT = (
+        "https://www.bilibili.com/audio/music-service-c/web/song/of-menu"
+    )
+    _API_PLAYMENU_INFO = "https://www.bilibili.com/audio/music-service-c/web/menu/info"
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
@@ -19,7 +22,7 @@ class AudioAPIs(template.APITemplate):
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template()
-    def get_stream(self, auid, quality = 3):
+    def get_stream(self, auid, quality=3):
         """
         单曲取流
 
@@ -45,8 +48,16 @@ class AudioAPIs(template.APITemplate):
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template()
-    def get_playmenu(self, amid, page = 1, page_size = 100):
+    def get_playmenu_content(self, amid, page=1, page_size=100):
         """获取歌单"""
-        return AudioAPIs._API_PLAYMENU, {
+        return AudioAPIs._API_PLAYMENU_CONTENT, {
             "params": {"sid": amid, "pn": page, "ps": page_size}
+        }
+
+    @utils.pick_data()
+    @checker.check_bilicode(msgkey="msg")
+    @template.request_template()
+    def get_playmenu_info(self, amid):
+        return AudioAPIs._API_PLAYMENU_INFO, {
+            "params": {"sid": amid},
         }

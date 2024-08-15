@@ -129,8 +129,40 @@ class CliCore:
             unit="it",
         )
 
+    @check_exceptions
     def _audio_process(self, savedir: Optional[str], *, auid: int, **options):
         audio_info = self._apis.audio.get_info(auid=auid)
         printers.print_audio_info(audio_info)
         if not savedir:
             return
+        return utils.run_threads(
+            [
+                SingleAudioThread(
+                    self._apis,
+                    auid=auid,
+                    savedir=savedir,
+                    **options,
+                    audio_data=audio_info,
+                )
+            ]
+        )
+
+    def _audio_playmenu_process(self, savedir: Optional[str], *, amid: int, **options):
+        page_size = 50
+        info = self._apis.audio.get_playmenu_info(amid=amid)
+        content = self._apis.audio.get_playmenu_content(
+            amid=amid, page=1, page_size=page_size
+        )
+        songlist: list[dict[str, Any]] = content["data"]
+        if content["pageCount"] > 1:
+            while content["curPage"] < content["pageCount"]:
+                content = self._apis.audio.get_playmenu_content(
+                    amid=amid, page=content["curPage"] + 1, page_size=page_size
+                )
+                songlist += content["data"]
+
+        printers.print_audio_playmenu_info(info, songlist)
+        if not savedir:
+            return
+        pindexs = utils.parse_index_option(options.get("index"))
+        # TODO:

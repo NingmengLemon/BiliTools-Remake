@@ -44,12 +44,15 @@ Uploader    {uname}
 Author(s)   {author}
 Cover       {cover}
 Lyrics      {lyric}
-Desc        {intro}
-au{id} -> {aid} / {bvid}
-""".format(
+au{id}""".format(
             **info
-        )
+        ),
+        end="",
     )
+    if info.get("bvid"):
+        print(" -> av{aid} / {bvid}\n".format(**info))
+    else:
+        print("\n")
 
 
 def print_media_detail(detail: dict[str, Any]):
@@ -115,3 +118,20 @@ mc{id}""".format(
             )
     else:
         print("No episode yet.")
+
+
+def print_audio_playmenu_info(aminfo: dict[str, Any], songlist: list[dict[str, Any]]):
+    print(
+        """
+Title       {title}
+Uploader    {uname}
+Cover       {cover}
+""".format(
+            **aminfo
+        )
+    )
+    if not songlist:
+        print("No song yet.")
+    print(f"{len(songlist)} song(s) in total")
+    for i, song in enumerate(songlist):
+        print("P{i:<4d} au{id:<9d} {title}".format(**song, i=i + 1))

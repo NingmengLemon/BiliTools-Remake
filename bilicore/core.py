@@ -248,7 +248,9 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             self._report_progress(pgr_text="skipped: file already exists")
             return
         # 字幕
-        subfile = os.path.join(self._savedir, os.path.split(finalfile)[1] + ".{lan}" + f".{self._sf}")
+        subfile = os.path.join(
+            self._savedir, os.path.split(finalfile)[1] + ".{lan}" + f".{self._sf}"
+        )
         if self._sv is not None:
             self._report_progress(pgr_text="fetching subtitle")
             for sub in subtitles:
@@ -312,10 +314,12 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         "quality",
         "lyrics",
         "cover",
+        "no_metadata"
+        # 预处理数据
         "audio_data",
     )
 
-    def __init__(self, apis: APIContainer, auid, savedir, **options) -> None:
+    def __init__(self, apis: APIContainer, auid: int, savedir: str, **options) -> None:
         super().__init__(daemon=True)
         ThreadProgressMixin.__init__(self)
         self._apis = apis
@@ -325,6 +329,7 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         self._quality: Optional[Literal[0, 1, 2, 3]] = options.get("quality", 3)
         self._need_lrc = bool(options.get("lyrics", False))
         self._need_cover = bool(options.get("cover", False))
+        self._need_metadata = not bool(options.get("no_metadata", False))
         self._info: Optional[dict[str, Any]] = options.get("audio_data")
 
     def _worker(self):
@@ -348,20 +353,23 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             ),
         )
         if (lrc_url := info.get("lyric")) and self._need_lrc:
+            self._report_progress(pgr_text="lyrics")
             self._dfile(lrc_url, finalfile + ".lrc", self._apis)
         if (cover := info.get("cover")) and self._need_cover:
+            self._report_progress(pgr_text="cover")
             self._dfile(cover, finalfile + os.path.splitext(cover)[1], self._apis)
         if os.path.isfile(finalfile):
             self._report_progress(pgr_text="skipped")
             return
 
-        self._report_progress(pgr_text="fetching stream")
+        self._report_progress(pgr_text="downloading")
         self._dstream(
             stream["cdns"],
             tmpfile,
             self._progress_hook,
             apis=self._apis,
         )
+        self._report_progress(pgr_text="converting")
         if is_lossless:
             os.rename(tmpfile, finalfile)
         else:
@@ -375,6 +383,11 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             os.remove(tmpfile)
         self._report_progress(pgr_text="done")
 
+    @staticmethod
+    def _generate_metadict(audio_info: dict[str, Any]) -> dict[str, str]:
+        # TODO:
+        return NotImplemented
+
     def run(self):
         self._run_wrapped(self._worker)
 
@@ -382,6 +395,7 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
 class SingleMangaChapterThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin):
     VALID_OPTIONS = (
         "create_childfolder",
+        # 预处理数据
         "ep_data",
     )
 

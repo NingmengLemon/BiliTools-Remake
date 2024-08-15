@@ -16,7 +16,6 @@ _FN_REPMAP = {
     '"': "＂",
 }
 
-
 def call_ffmpeg(*args):
     cmd = ["ffmpeg", "-loglevel", "quiet", "-nostdin", "-hide_banner"]
     cmd += args
@@ -28,11 +27,53 @@ def call_ffmpeg(*args):
         return subp.wait()
 
 
-def merge_avfile(au_file: str, vi_file: str, output_file: str) -> int:
-    """调用ffmpeg进行合流"""
-    return call_ffmpeg(
-        "-i", au_file, "-i", vi_file, "-vcodec", "copy", "-acodec", "copy", output_file
-    )
+def merge_avfile(
+    au_file: str,
+    vi_file: str,
+    output_file: str,
+    metadata: Optional[dict[str, str]] = None,
+) -> int:
+    """调用ffmpeg进行合流，并能添加元数据"""
+    args = ["-i", au_file, "-i", vi_file, "-vcodec", "copy", "-acodec", "copy"]
+    if metadata:
+        for key, value in metadata.items():
+            args.extend(["-metadata", f"{key}={value}"])
+    args.append(output_file)
+    return call_ffmpeg(*args)
+
+
+def convert_audio(
+    input_file: str,
+    output_file: str,
+    metadata: Optional[dict[str, str]] = None,
+    cover_image: Optional[str] = None,
+):
+    """
+    转换音频文件格式，且能添加元数据和封面图片
+    元数据名称参见：https://kodi.wiki/view/Video_file_tagging#Supported_Tags
+
+    :param input_file: 输入文件路径
+    :param output_file: 输出文件路径
+    :param metadata: 包含元数据的字典
+    :param cover_image: 封面图片文件路径
+    """
+    args = ["-i", input_file]
+
+    if metadata:
+        for key, value in metadata.items():
+            args.extend(["-metadata", f"{key}={value}"])
+
+    if cover_image:
+        # fmt: off
+        args.extend([
+            "-i", cover_image, "-map", "0", "-map", "1", 
+            "-metadata:s:v", "title=Album cover", 
+            "-metadata:s:v", "comment=Cover (front)"
+            ])
+        # fmt: on
+
+    args.append(output_file)
+    return call_ffmpeg(*args)
 
 
 def filename_escape(text: str):

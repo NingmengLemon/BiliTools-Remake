@@ -73,10 +73,10 @@ class App(CliCore):
             return
 
         if _ := login.get_login_info_noexc(apis):
-            print("已登录。")
+            print("Already logged in.")
             printers.print_login_info(_)
         else:
-            print("未登录。部分资源将无法取得！")
+            print("Not logged in. Some resources will be unavailable.")
 
         source: Optional[str] = args.input
         savedir: Optional[str] = args.output
@@ -96,22 +96,23 @@ class App(CliCore):
         if savedir is None:
             print("- dry run -")
 
+        options = remove_none(vars(args))
         match idn:
             case "bvid" | "avid":
                 # common video
-                self._common_video_process(savedir, **{idn: idc}, **remove_none(vars(args)))  # type: ignore[misc]
+                self._common_video_process(savedir, **{idn: idc}, **options)  # type: ignore[misc]
             case "mdid" | "ssid" | "epid":
                 # media
-                self._media_process(savedir, **{idn: idc}, **remove_none(vars(args)))  # type: ignore[misc]
+                self._media_process(savedir, **{idn: idc}, **options)  # type: ignore[misc]
             case "auid":
                 # audio
-                pass
+                self._audio_process(savedir, auid=idc, **options)
             case "amid":
                 # audio playmenu
-                pass
+                self._audio_playmenu_process(savedir, amid=idc, **options)
             case "mcid":
                 # manga
-                self._manga_process(savedir, mcid=idc, **remove_none(vars(args)))
+                self._manga_process(savedir, mcid=idc, **options)
             case _:
                 # not supported
-                print(f"source type {idn}={idc} not supported yet :(")
+                print(f"source type {idn} not supported yet :(")

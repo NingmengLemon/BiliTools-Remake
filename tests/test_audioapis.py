@@ -20,8 +20,11 @@ def test_get_tags():
 
 
 def test_get_playmenu():
-    menu = apis.audio.get_playmenu(amid=125312)
+    amid = 125312
+    menu = apis.audio.get_playmenu_content(amid=amid)
     dump_data("audio_playmenu.json", menu)
+    info = apis.audio.get_playmenu_info(amid=amid)
+    dump_data("audio_playmenu_info.json", info)
 
 
 if __name__ == "__main__":
