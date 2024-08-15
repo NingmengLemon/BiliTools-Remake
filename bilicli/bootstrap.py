@@ -19,7 +19,13 @@ def parse_arguments():
 
     #
     parser.add_argument(
-        "--session", type=str, help="指定要加载的Session文件。请勿加载未信任的文件"
+        "--session",
+        type=str,
+        help="指定要加载的Session文件。注意请勿加载未信任的文件。",
+    )
+
+    parser.add_argument(
+        "--max-worker", type=int, default=4, help="指定最大的同时进行的线程数"
     )
 
     #
@@ -81,7 +87,7 @@ def parse_arguments():
 
     # 输出路径，唯一必选参数
     parser.add_argument(
-        "-o", "--output", type=str, help="指定输出路径，若未指定则仅打印信息"
+        "-o", "--output", type=str, help="指定输出路径，省略时同 --dry-run"
     )
 
     return parser.parse_args()

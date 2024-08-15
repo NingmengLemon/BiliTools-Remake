@@ -1,8 +1,20 @@
-from typing import Optional, Any
+from typing import Optional, Any, Callable
+import functools
 
 from biliapis import APIContainer
-from bilicore.core import SingleVideoThread
+from bilicore.core import SingleVideoThread, SingleAudioThread, SingleMangaChapterThread
 from bilicli import printers, utils
+
+
+def check_exceptions(func: Callable[..., Optional[list[Exception]]]):
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        excs = func(*args, **kwargs)
+        print("\nall done!")
+        if excs:
+            print(f"{len(excs)} exception(s) occurred, plz check log")
+
+    return wrapped
 
 
 class CliCore:
@@ -13,20 +25,24 @@ class CliCore:
     def _apis(self):
         return self.__apis
 
+    @check_exceptions
     def _common_video_process(
         self, savedir: Optional[str], *, avid=None, bvid=None, **options
     ):
         video_data = self._apis.video.get_video_detail(avid=avid, bvid=bvid)
         printers.print_video_info(video_data)
-        pindexs = set(utils.parse_index_option(options.get("index")))  # 从1始计
+        pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
         if not savedir:
             return
+        print("\nstarting download...\n")
         pages = [
             page
             for i, page in enumerate(video_data["pages"])
             if i + 1 in pindexs or not pindexs
         ]
-        utils.run_threads(
+        if not pages:
+            return
+        return utils.run_threads(
             [
                 SingleVideoThread(
                     self._apis,
@@ -37,9 +53,11 @@ class CliCore:
                     video_data=video_data,
                 )
                 for page in pages
-            ]
+            ],
+            max_worker=options.get("max_worker", 4),
         )
 
+    @check_exceptions
     def _media_process(
         self, savedir: Optional[str], *, ssid=None, mdid=None, epid=None, **options
     ):
@@ -47,8 +65,9 @@ class CliCore:
         printers.print_media_detail(media_detail)
         if not savedir:
             return
-        pindexs = set(utils.parse_index_option(options.get("index")))  # 从1始计
-        # 超出正片分P索引的作为番外处理，但不指定索引则还是只处理正片
+        print("\nstarting download...\n")
+        pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
+        # 超出正片分P索引的作为番外处理，不指定索引则只处理正片
         eps = media_detail.get("episodes", [])
         eps_to_handle: list[tuple[int, dict[str, Any]]] = [
             (i + 1, ep) for i, ep in enumerate(eps) if i + 1 in pindexs or not pindexs
@@ -61,7 +80,9 @@ class CliCore:
                     if (reali := i + 1 + offset) in pindexs:
                         eps_to_handle.append((reali, ep))
                 offset += len(eps)
-        utils.run_threads(
+        if not eps_to_handle:
+            return
+        return utils.run_threads(
             [
                 SingleVideoThread(
                     self._apis,
@@ -74,9 +95,42 @@ class CliCore:
                     ptitle=utils.generate_media_ptitle(**ep, i=i),
                 )
                 for i, ep in eps_to_handle
-            ]
+            ],
+            max_worker=options.get("max_worker", 4),
         )
 
+    @check_exceptions
     def _manga_process(self, savedir: Optional[str], *, mcid: int, **options):
-        # TODO: write this
-        return NotImplemented
+        manga_info = self._apis.manga.get_detail(mcid=mcid)
+        if "ep_list" in manga_info and manga_info.get("ep_list"):
+            manga_info["ep_list"].sort(key=lambda x: x["ord"])
+        else:
+            manga_info["ep_list"] = []
+        printers.print_manga_info(manga_info)
+        if not savedir:
+            return
+        pindexs = utils.parse_index_option(options.get("index"))
+        print("\nstarting download...\n")
+        eps_to_handle = [
+            page
+            for i, page in enumerate(manga_info["ep_list"])
+            if i + 1 in pindexs or not pindexs
+        ]
+        if not eps_to_handle:
+            return
+        return utils.run_threads(
+            [
+                SingleMangaChapterThread(
+                    apis=self._apis, epid=ep["id"], savedir=savedir
+                )
+                for ep in eps_to_handle
+            ],
+            max_worker=options.get("max_worker", 4),
+            unit="it",
+        )
+
+    def _audio_process(self, savedir: Optional[str], *, auid: int, **options):
+        audio_info = self._apis.audio.get_info(auid=auid)
+        printers.print_audio_info(audio_info)
+        if not savedir:
+            return

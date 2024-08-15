@@ -111,7 +111,7 @@ class App(CliCore):
                 pass
             case "mcid":
                 # manga
-                pass
+                self._manga_process(savedir, mcid=idc, **remove_none(vars(args)))
             case _:
                 # not supported
                 print(f"source type {idn}={idc} not supported yet :(")

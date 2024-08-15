@@ -39,12 +39,12 @@ av{aid} / {bvid}
 def print_audio_info(info: dict[str, Any]):
     print(
         """
-Title     {title}
-Uploader  {uname}
-Author    {author}
-Cover     {cover}
-Lyrics    {lyric}
-Desc      {intro}
+Title       {title}
+Uploader    {uname}
+Author(s)   {author}
+Cover       {cover}
+Lyrics      {lyric}
+Desc        {intro}
 au{id} -> {aid} / {bvid}
 """.format(
             **info
@@ -90,3 +90,28 @@ def _print_media_episodes(eplist: Optional[list[dict[str, Any]]], pindex_offset=
         )
     else:
         print("No episode here")
+
+
+def print_manga_info(info: dict[str, Any]):
+    print(
+        """
+Title       {title}
+mc{id}""".format(
+            **info
+        )
+    )
+    print("by:", ",".join(info["author_name"]))
+    print()
+
+    if eplist := info["ep_list"]:
+        print(len(eplist), "episode(s) in total.")
+        for i, ep in enumerate(eplist):
+            print(
+                "P{i:<4d} ep{id:<10d} {lock_status} {short_title}_{title}".format(
+                    **ep,
+                    lock_status="[ Locked ]" if ep["is_locked"] else "[Unlocked]",
+                    i=i + 1,
+                )
+            )
+    else:
+        print("No episode yet.")
