@@ -51,7 +51,7 @@ def run_thread_with_tqdm(
             update_progress(pgrbar, thread)
             time.sleep(interval)
         update_progress(pgrbar, thread)
-    if not thread.exceptions and pos_assigner:
+    if (not thread.exceptions) and pos_assigner:
         pos_assigner.put(pos)
     return thread
 
@@ -68,7 +68,7 @@ def run_threads(threads: Sequence[WorkerThread], max_worker=4, unit="B"):
             as_completed(futures),
             total=len(threads),
             desc="Overall",
-            leave=False,
+            leave=True,
             position=0,
         ):
             thread = future.result()

@@ -3,6 +3,7 @@ import asyncio
 from typing import Callable, Iterable, Mapping, Any, Optional, Union
 import functools
 import subprocess
+import logging
 
 _FN_REPMAP = {
     "/": "／",
@@ -16,9 +17,11 @@ _FN_REPMAP = {
     '"': "＂",
 }
 
+
 def call_ffmpeg(*args):
     cmd = ["ffmpeg", "-loglevel", "quiet", "-nostdin", "-hide_banner"]
     cmd += args
+    logging.debug("Executing: %s", cmd)
     with subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -28,16 +31,34 @@ def call_ffmpeg(*args):
 
 
 def merge_avfile(
-    au_file: str,
+    au_file: Optional[str],
     vi_file: str,
     output_file: str,
+    cover_image: Optional[str] = None,
     metadata: Optional[dict[str, str]] = None,
 ) -> int:
     """调用ffmpeg进行合流，并能添加元数据"""
-    args = ["-i", au_file, "-i", vi_file, "-vcodec", "copy", "-acodec", "copy"]
+    args = ["-i", vi_file]
+    if au_file:
+        args.extend(["-i", au_file])
+    if cover_image:
+        args.extend(["-i", cover_image])
+
+    if au_file and cover_image:
+        args.extend(["-map", "0", "-map", "1", "-map", "2"])
+    elif au_file:
+        args.extend(["-map", "0", "-map", "1"])
+    elif cover_image:
+        args.extend(["-map", "0", "-map", "1"])
+    else:
+        args.extend(["-map", "0"])
+
+    args.extend(["-c", "copy"])
+
     if metadata:
         for key, value in metadata.items():
             args.extend(["-metadata", f"{key}={value}"])
+
     args.append(output_file)
     return call_ffmpeg(*args)
 
@@ -45,6 +66,7 @@ def merge_avfile(
 def convert_audio(
     input_file: str,
     output_file: str,
+    quality: Optional[str] = None,
     metadata: Optional[dict[str, str]] = None,
     cover_image: Optional[str] = None,
 ):
@@ -59,18 +81,24 @@ def convert_audio(
     """
     args = ["-i", input_file]
 
+    if cover_image:
+        args.extend(["-i", cover_image])
+
+    if cover_image:
+        args.extend(["-map", "0", "-map", "1"])
+    else:
+        args.extend(["-map", "0"])
+
+    if quality:
+        args.extend(["-b:a", quality])
+
+    if cover_image:
+        args.extend(["-c:v", "mjpeg"])  # 封面图片一般为 JPEG 格式
+        args.extend(["-disposition:v", "attached_pic"])  # 标记图片为封面
+
     if metadata:
         for key, value in metadata.items():
             args.extend(["-metadata", f"{key}={value}"])
-
-    if cover_image:
-        # fmt: off
-        args.extend([
-            "-i", cover_image, "-map", "0", "-map", "1", 
-            "-metadata:s:v", "title=Album cover", 
-            "-metadata:s:v", "comment=Cover (front)"
-            ])
-        # fmt: on
 
     args.append(output_file)
     return call_ffmpeg(*args)

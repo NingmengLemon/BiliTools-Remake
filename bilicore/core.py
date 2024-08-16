@@ -9,7 +9,7 @@ from biliapis import APIContainer, bilicodes
 from biliapis import subtitle
 from bilicore.downloader import download_common
 from bilicore.parser import select_quality
-from bilicore.utils import filename_escape, merge_avfile, call_ffmpeg
+from bilicore.utils import filename_escape, merge_avfile, convert_audio
 
 
 class ThreadProgressMixin:
@@ -118,6 +118,8 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         "video_codec",
         "subtitle_lang",
         "subtitle_format",
+        "cover",
+        "no_metadata",
         # 预处理数据
         "stream_data",
         "video_data",
@@ -154,6 +156,8 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         self._aq: str | int = options.get("audio_quality", "max")
         self._sv: Optional[str | Literal["all"]] = options.get("subtitle_lang")
         self._sf: Literal["vtt", "srt", "lrc"] = options.get("subtitle_format", "vtt")
+        self._need_cover: bool = bool(options.get("cover", False))
+        self._need_metadata: bool = not bool(options.get("no_metadata", False))
 
         self._video_data: Optional[dict[str, Any]] = options.get("video_data")
         self._streams: Optional[dict[str, Any]] = options.get("stream_data")
@@ -180,16 +184,14 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             pgr_name=f"P{pindex+1 if self._correct_pindex is None else self._correct_pindex}"
         )
         bvid = vdata["bvid"]
-        player_info = self._apis.video.get_player_info(cid=cid, bvid=bvid)
+        player_info = self._player_info or self._apis.video.get_player_info(
+            cid=cid, bvid=bvid
+        )
         if _ := player_info.get("subtitle", {}).get("subtitles", []):
             subtitles = _
         else:
             subtitles = []
-        streams = (
-            self._apis.video.get_stream_dash(cid, bvid=bvid)
-            if self._streams is None
-            else self._streams
-        )
+        streams = self._streams or self._apis.video.get_stream_dash(cid, bvid=bvid)
         vstream, astream = select_quality(
             streams, aq=self._aq, vq=self._vq, enc=self._vc
         )
@@ -247,6 +249,11 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         if os.path.isfile(finalfile):
             self._report_progress(pgr_text="skipped: file already exists")
             return
+        # 封面
+        coverfile: Optional[str] = None
+        if self._need_cover:
+            coverfile = finalfile + os.path.splitext(vdata["pic"])[1]
+            self._dfile(vdata["pic"], coverfile, self._apis)
         # 字幕
         subfile = os.path.join(
             self._savedir, os.path.split(finalfile)[1] + ".{lan}" + f".{self._sf}"
@@ -267,18 +274,23 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             self._dstream(aurls, atmpfile, self._progress_hook, apis=self._apis)
         # 仅音轨的分岔
         if self._audio_only:
-            if is_lossless:
-                os.rename(atmpfile, finalfile)
-            else:
-                self._report_progress(pgr_text="converting")
-                call_ffmpeg(
-                    "-i",
-                    atmpfile,
-                    "-b:a",
-                    bilicodes.stream_dash_audio_quality.get(aqid, "192k").lower(),
-                    finalfile,
-                )
-                os.remove(atmpfile)
+            self._report_progress(pgr_text="converting")
+            convert_audio(
+                atmpfile,
+                finalfile,
+                quality=(
+                    None
+                    if is_lossless
+                    else bilicodes.stream_dash_audio_quality.get(aqid, "192k").lower()
+                ),
+                metadata=(
+                    self._generate_metadict(vdata, pindex)
+                    if self._need_metadata
+                    else None
+                ),
+                cover_image=(coverfile if self._need_cover else None),
+            )
+            os.remove(atmpfile)
             self._report_progress(pgr_text="done")
             return
         # 普通视频的分岔
@@ -289,13 +301,37 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         self._report_progress(pgr_text="video stream")
         self._dstream(vurls, vtmpfile, vhook, apis=self._apis)
         self._report_progress(pgr_text="merging")
-        if no_audio:
-            call_ffmpeg("-i", vtmpfile, "-vcodec", "copy", finalfile)
-        else:
-            merge_avfile(atmpfile, vtmpfile, finalfile)
+        merge_avfile(
+            (None if no_audio else atmpfile),
+            vtmpfile,
+            finalfile,
+            metadata=(
+                self._generate_metadict(vdata, pindex) if self._need_metadata else None
+            ),
+            cover_image=(coverfile if self._need_cover else None),
+        )
+        if not no_audio:
             os.remove(atmpfile)
         os.remove(vtmpfile)
         self._report_progress(pgr_text="done")
+
+    def _generate_metadict(
+        self,
+        video_detail: dict[str, Any],
+        real_pindex: int,
+    ) -> dict[str, str]:
+        title = self._correct_title or video_detail["title"]
+        ptitle = self._correct_ptitle or video_detail["pages"][real_pindex]["part"]
+        pindex = self._correct_pindex or real_pindex
+        ptitle = f"P{pindex}" + (f" - {ptitle}" if ptitle != title else "")
+        metadata = {
+            "title": title,
+            "subtitle": ptitle,
+            "comment": video_detail["bvid"],
+        }
+        if video_detail["copyright"] == 1:
+            metadata["artist"] = video_detail["owner"]["name"]
+        return metadata
 
     def _dsubt(self, url, file, fmt: Literal["vtt", "srt", "lrc"]):
         subt = self._apis.session.get(url, headers=self._apis.DEFAULT_HEADERS).json()
@@ -355,9 +391,11 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         if (lrc_url := info.get("lyric")) and self._need_lrc:
             self._report_progress(pgr_text="lyrics")
             self._dfile(lrc_url, finalfile + ".lrc", self._apis)
+        coverfile: Optional[str] = None
         if (cover := info.get("cover")) and self._need_cover:
+            coverfile = finalfile + os.path.splitext(cover)[1]
             self._report_progress(pgr_text="cover")
-            self._dfile(cover, finalfile + os.path.splitext(cover)[1], self._apis)
+            self._dfile(cover, coverfile, self._apis)
         if os.path.isfile(finalfile):
             self._report_progress(pgr_text="skipped")
             return
@@ -370,23 +408,31 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             apis=self._apis,
         )
         self._report_progress(pgr_text="converting")
-        if is_lossless:
-            os.rename(tmpfile, finalfile)
-        else:
-            call_ffmpeg(
-                "-i",
-                tmpfile,
-                "-b:a",
-                bilicodes.stream_audio_quality.get(stream["type"], "320k")[:4].lower(),
-                finalfile,
-            )
-            os.remove(tmpfile)
+        convert_audio(
+            tmpfile,
+            finalfile,
+            quality=(
+                None
+                if is_lossless
+                else bilicodes.stream_audio_quality.get(stream["type"], "320k")[
+                    :4
+                ].lower()
+            ),
+            metadata=(self._generate_metadict(info) if self._need_metadata else None),
+            cover_image=(coverfile if self._need_metadata else None),
+        )
+        os.remove(tmpfile)
         self._report_progress(pgr_text="done")
 
-    @staticmethod
-    def _generate_metadict(audio_info: dict[str, Any]) -> dict[str, str]:
-        # TODO:
-        return NotImplemented
+    def _generate_metadict(self, audio_info: dict[str, Any]) -> dict[str, str]:
+        auid = audio_info["id"]
+        meta_dict = {
+            "title": audio_info["title"],
+            "artist": audio_info["author"],
+            "comment": f"au{auid}"
+            + (" / " + audio_info["bvid"] if audio_info["bvid"] else ""),
+        }
+        return meta_dict
 
     def run(self):
         self._run_wrapped(self._worker)

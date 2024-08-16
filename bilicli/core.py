@@ -135,6 +135,7 @@ class CliCore:
         printers.print_audio_info(audio_info)
         if not savedir:
             return
+        print("\nstarting download...\n")
         return utils.run_threads(
             [
                 SingleAudioThread(
@@ -147,22 +148,38 @@ class CliCore:
             ]
         )
 
+    @check_exceptions
     def _audio_playmenu_process(self, savedir: Optional[str], *, amid: int, **options):
-        page_size = 50
+        page_size = 50  # max=100
         info = self._apis.audio.get_playmenu_info(amid=amid)
         content = self._apis.audio.get_playmenu_content(
             amid=amid, page=1, page_size=page_size
         )
         songlist: list[dict[str, Any]] = content["data"]
-        if content["pageCount"] > 1:
-            while content["curPage"] < content["pageCount"]:
-                content = self._apis.audio.get_playmenu_content(
-                    amid=amid, page=content["curPage"] + 1, page_size=page_size
-                )
-                songlist += content["data"]
+        while content["curPage"] < content["pageCount"]:
+            content = self._apis.audio.get_playmenu_content(
+                amid=amid, page=content["curPage"] + 1, page_size=page_size
+            )
+            songlist += content["data"]
 
         printers.print_audio_playmenu_info(info, songlist)
         if not savedir:
             return
+        print("\nstarting download...\n")
         pindexs = utils.parse_index_option(options.get("index"))
-        # TODO:
+        return utils.run_threads(
+            [
+                SingleAudioThread(
+                    self._apis,
+                    auid=song["id"],
+                    savedir=savedir,
+                    **options,
+                    audio_data=song,
+                )
+                for i, song in enumerate(songlist)
+                if i + 1 in pindexs or not pindexs
+            ]
+        )
+
+    def _video_series_process(self, savedir):
+        return NotImplemented

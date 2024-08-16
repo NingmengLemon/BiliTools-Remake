@@ -85,6 +85,8 @@ def parse_arguments():
     # 是否下载封面
     parser.add_argument("--cover", action="store_true", help="如果来源为音乐则下载封面")
 
+    parser.add_argument("--no-metadata", action="store_true", help="不要写入元数据")
+
     # 输出路径，唯一必选参数
     parser.add_argument(
         "-o", "--output", type=str, help="指定输出路径，省略时同 --dry-run"
