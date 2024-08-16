@@ -7,7 +7,7 @@ from threading import Lock
 
 from tqdm import tqdm
 
-from bilicli.hints import WorkerThread
+from .hints import WorkerThread
 
 
 class BarPosAssigner:

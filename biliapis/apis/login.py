@@ -8,10 +8,10 @@ from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from lxml import etree
 
-from biliapis import checker
-from biliapis import utils
-from biliapis import template
-from biliapis import error
+from .. import checker
+from .. import utils
+from .. import template
+from .. import error
 
 # 关于刷新 Cookies 的相关内容，参见
 # https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/login/cookie_refresh.md

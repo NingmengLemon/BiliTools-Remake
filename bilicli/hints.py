@@ -1,6 +1,6 @@
 from typing import TypeAlias
 
-from bilicore.core import SingleVideoThread, SingleAudioThread, SingleMangaChapterThread
+from bilicore.threads import SingleVideoThread, SingleAudioThread, SingleMangaChapterThread
 
 __all__ = ["WorkerThread"]
 

@@ -4,7 +4,7 @@ import time
 import qrcode
 
 from biliapis import APIContainer, BiliError
-from bilicli.printers import print_login_info
+from .printers import print_login_info
 
 
 def get_login_info_noexc(apis: APIContainer):

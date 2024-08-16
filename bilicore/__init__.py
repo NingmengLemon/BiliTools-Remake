@@ -1,1 +1,1 @@
-from bilicore import utils, core, downloader, parser
+from bilicore import threads, utils, downloader, parser

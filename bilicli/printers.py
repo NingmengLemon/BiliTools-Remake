@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from bilicli.utils import generate_media_ptitle
+from .utils import generate_media_ptitle
 
 
 def print_login_info(info: dict[str, Any]):

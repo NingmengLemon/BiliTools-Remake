@@ -1,8 +1,8 @@
 from typing import Optional, Any
 
-from biliapis import checker
-from biliapis import utils
-from biliapis import template
+from .. import checker
+from .. import utils
+from .. import template
 
 
 class MediaAPIs(template.APITemplate):

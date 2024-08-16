@@ -9,8 +9,8 @@ from typing import Optional
 from biliapis import new_apis, APIContainer
 from biliapis.utils import remove_none
 from bilicore.parser import extract_ids
-from bilicli import printers, login
-from bilicli.core import CliCore
+from . import printers, login
+from .process import CliCore
 
 
 class App(CliCore):

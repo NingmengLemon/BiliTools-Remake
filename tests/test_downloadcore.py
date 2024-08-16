@@ -2,18 +2,18 @@ import logging
 import pytest
 
 from initapis import apis, SAVEDIR
-from bilicore import core
+from bilicore import threads
 
 
 def test_commonvideo():
-    p = core.SingleVideoThread(apis, 171776208, avid=99999999, savedir=SAVEDIR)
+    p = threads.SingleVideoThread(apis, 171776208, avid=99999999, savedir=SAVEDIR)
     p.start()
     p.join()
     assert not bool(p.exceptions), p.exceptions
 
 
 def test_commonvideo_audio():
-    p = core.SingleVideoThread(
+    p = threads.SingleVideoThread(
         apis, 171776208, avid=99999999, savedir=SAVEDIR, audio_only=True
     )
     p.start()
@@ -22,14 +22,14 @@ def test_commonvideo_audio():
 
 
 def test_audio():
-    p = core.SingleAudioThread(apis, 37787, SAVEDIR)
+    p = threads.SingleAudioThread(apis, 37787, SAVEDIR)
     p.start()
     p.join()
     assert not bool(p.exceptions), p.exceptions
 
 
 def test_manga():
-    p = core.SingleMangaChapterThread(apis, 806132, SAVEDIR)
+    p = threads.SingleMangaChapterThread(apis, 806132, SAVEDIR)
     p.start()
     p.join()
     assert not bool(p.exceptions), p.exceptions

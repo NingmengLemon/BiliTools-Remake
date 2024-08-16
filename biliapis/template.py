@@ -3,10 +3,10 @@ import functools
 
 from requests import Session
 
-from biliapis.wbi import CachedWbiManager
-from biliapis.constants import HEADERS as DEFAULT_HEADERS
-from biliapis.error import BiliError
-from biliapis.utils import get_csrf
+from .wbi import CachedWbiManager
+from .constants import HEADERS as DEFAULT_HEADERS
+from .error import BiliError
+from .utils import get_csrf
 
 
 __all__ = ["APITemplate", "request_template", "withcsrf"]

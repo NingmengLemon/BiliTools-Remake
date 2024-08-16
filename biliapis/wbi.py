@@ -15,7 +15,7 @@ from threading import Lock
 
 import requests
 
-from biliapis.constants import HEADERS as _HEADERS
+from .constants import HEADERS as _HEADERS
 
 __all__ = ["CachedWbiManager", "sign", "get_wbi_keys"]
 

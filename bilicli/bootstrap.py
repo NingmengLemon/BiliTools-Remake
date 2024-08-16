@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from bilicli.app import App
+from .app import App
 
 LOGFILE_PATH = "./run.log"
 

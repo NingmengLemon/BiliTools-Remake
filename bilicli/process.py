@@ -2,8 +2,8 @@ from typing import Optional, Any, Callable
 import functools
 
 from biliapis import APIContainer
-from bilicore.core import SingleVideoThread, SingleAudioThread, SingleMangaChapterThread
-from bilicli import printers, utils
+from bilicore.threads import SingleVideoThread, SingleAudioThread, SingleMangaChapterThread
+from . import printers, utils
 
 
 def check_exceptions(func: Callable[..., Optional[list[Exception]]]):

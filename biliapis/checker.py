@@ -1,7 +1,7 @@
 from typing import Optional, Union, Callable, Any
 import functools
 
-from biliapis.error import BiliError
+from .error import BiliError
 
 __all__= ["check_abvid", "check_bilicode"]
 

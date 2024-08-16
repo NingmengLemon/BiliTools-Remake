@@ -2,10 +2,10 @@ from typing import Optional
 
 from requests import Session, adapters
 
-from biliapis.wbi import CachedWbiManager
+from .wbi import CachedWbiManager
 
 # collect components
-from biliapis.constants import HEADERS, VERSION
+from .constants import HEADERS, VERSION
 from . import apis
 
 __all__ = ["APIContainer", "default_session", "new_apis"]

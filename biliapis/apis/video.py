@@ -4,9 +4,9 @@ import logging
 
 from requests import Session
 
-from biliapis import template
-from biliapis import checker
-from biliapis import utils
+from .. import template
+from .. import checker
+from .. import utils
 from biliapis.error import BiliError
 from biliapis.wbi import CachedWbiManager
 

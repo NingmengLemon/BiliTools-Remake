@@ -1,6 +1,8 @@
 from typing import Optional
+
 from requests import Session
-from biliapis.wbi import CachedWbiManager
+
+from .wbi import CachedWbiManager
 from . import apis
 
 class APIContainer:
