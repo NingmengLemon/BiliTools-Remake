@@ -9,7 +9,8 @@ def print_login_info(info: dict[str, Any]):
 User    {uname}
 UID     {mid}
 Avatar  {face}
-Coin    {money}""".format(
+Coin    {money}
+""".format(
             **info
         )
     )

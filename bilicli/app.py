@@ -76,7 +76,7 @@ class App(CliCore):
             print("Already logged in.")
             printers.print_login_info(_)
         else:
-            print("Not logged in. Some resources will be unavailable.")
+            print("Not logged in. Some resources will be unavailable.\n")
 
         source: Optional[str] = args.input
         savedir: Optional[str] = args.output
