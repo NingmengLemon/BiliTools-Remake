@@ -16,18 +16,16 @@ def parse_arguments():
         "-v", "--version", action="store_true", help="Print version info"
     )
 
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
-
     parser.add_argument(
-        "--session-filepath",
-        type=str,
-        help="Specify path to load session file (a pickle file). DO NOT LOAD UNTRUSTED session file!",
+        "--debug",
+        action="store_true",
+        help="Enable debug mode. Notice debug log contains personal info!",
     )
 
     parser.add_argument(
         "--data-filepath",
         type=str,
-        help="Specify path to load extra data (a json file).",
+        help="Specify path to load data (a json file).",
     )
 
     parser.add_argument(

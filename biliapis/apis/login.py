@@ -138,7 +138,7 @@ class QRLoginAPIs(template.APITemplate):
         if data.get("code") == 0:
             self._extra_data["bili_refresh_token"] = data.get("refresh_token")
             logging.debug(
-                "refresh token write to extra data, %s",
+                "refresh token written to data, %s",
                 data.get("refresh_token"),
             )
         return data

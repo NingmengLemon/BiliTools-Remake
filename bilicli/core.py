@@ -22,15 +22,16 @@ def check_exceptions(func: Callable[..., Optional[list[Exception]]]):
 
 
 class CliCore:
+
     def __init__(self, apis: APIContainer) -> None:
         self.__apis = apis
-        self._idname_to_procmethod_map = (
-            (("bvid", "avid"), self._common_video_process),
-            (("mdid", "ssid", "epid"), self._media_process),
-            (("auid",), self._audio_process),
-            (("amid",), self._audio_playmenu_process),
-            (("mcid",), self._manga_process),
-        )
+        self._idname_to_procmethod_map: list[tuple[tuple[str, ...], Callable, bool]] = [
+            (("bvid", "avid"), self._common_video_process, False),
+            (("mdid", "ssid", "epid"), self._media_process, False),
+            (("auid",), self._audio_process, False),
+            (("amid",), self._audio_playmenu_process, False),
+            (("mcid",), self._manga_process, False),
+        ]
 
     @property
     def _apis(self):

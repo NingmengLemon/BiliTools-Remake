@@ -8,22 +8,25 @@ from biliapis import bilicodes
 
 
 ID_PATTERNS = (
-    (r"(BV[a-zA-Z0-9]{10})", "bvid", str),
-    (r"av([0-9]+)", "avid", int),
-    (r"au([0-9]+)", "auid", int),
-    (r"cv([0-9]+)", "cvid", int),
-    (r"mc([0-9]+)", "mcid", int),
-    (r"md([0-9]+)", "mdid", int),
-    (r"ss([0-9]+)", "ssid", int),
-    (r"ep([0-9]+)", "epid", int),
-    (r"uid([0-9]+)", "uid", int),
-    (r"am([0-9]+)", "amid", int),
+    (r"(?<![A-Za-z])(BV[a-zA-Z0-9]{10})", "bvid", str),
+    (r"(?<![A-Za-z])av([0-9]+)", "avid", int),
+    (r"(?<![A-Za-z])au([0-9]+)", "auid", int),
+    (r"(?<![A-Za-z])cv([0-9]+)", "cvid", int),
+    (r"(?<![A-Za-z])mc([0-9]+)", "mcid", int),
+    (r"(?<![A-Za-z])md([0-9]+)", "mdid", int),
+    (r"(?<![A-Za-z])ss([0-9]+)", "ssid", int),
+    (r"(?<![A-Za-z])ep([0-9]+)", "epid", int),
+    (r"(?<![A-Za-z])uid([0-9]+)", "uid", int),
+    (r"(?<![A-Za-z])am([0-9]+)", "amid", int),
+    (r"(?<=collectiondetail).*?(?<![A-Za-z])sid=([0-9]+)", "season_id", int),
+    (r"(?<=seriesdetail).*?(?<![A-Za-z])sid=([0-9]+)", "series_id", int),
+    (r"(?<=space\.bilibili\.com/)([0-9]+)", "uid", int),
 )
 
 
 def extract_ids(
     source: str, session: Optional[requests.Session] = None
-) -> Optional[tuple[str | int, str]]:
+) -> dict[str, str | int]:
     """
     根据输入的来源返回各种id
 
@@ -33,11 +36,12 @@ def extract_ids(
         session = session if session else requests.Session()
         url = "https://b23.tv/" + short.group(1)
         if (req := session.get(url, stream=True, headers=HEADERS)).status_code == 200:
-            source = req.url
-    for pattern, idname, idtype in ID_PATTERNS:
-        if res := re.search(r"(?<![A-Za-z])" + pattern, source, re.IGNORECASE):
-            return idtype(res.group(1)), idname
-    return None
+            source += req.url
+    result = {}
+    for pattern, idname, idprocfunc in ID_PATTERNS:
+        if res := re.search(pattern, source, re.IGNORECASE):
+            result[idname] = idprocfunc(res.group(1))
+    return result
 
 
 def select_quality(
