@@ -43,6 +43,17 @@ def parse_arguments():
         "--no-cookies-refresh", action="store_true", help="Don't do cookies refresh"
     )
 
+    parser.add_argument(
+        "--no-cache", action="store_true", help="Disable cache for *some* APIs"
+    )
+
+    parser.add_argument(
+        "--cache-expire",
+        type=int,
+        default=5 * 60,
+        help="Specify cache expire time, default to 300s",
+    )
+
     parser.add_argument("-i", "--input", type=str, help="Specify media source")
 
     parser.add_argument(

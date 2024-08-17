@@ -4,6 +4,7 @@ from .error import BiliError
 from . import apis
 from .wbi import CachedWbiManager
 from .constants import HEADERS as _HEADERS
+from .reqcache import init as init_cache
 
 HEADERS = _HEADERS.copy()
 
@@ -16,5 +17,6 @@ __all__ = [
     "CachedWbiManager",
     "APIContainer",  # for type hints
     "HEADERS",
-    "subtitle"
+    "subtitle",
+    "init_cache",
 ]

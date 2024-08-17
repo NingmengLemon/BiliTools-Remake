@@ -21,7 +21,7 @@ class MangaAPIs(template.APITemplate):
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
-    @template.request_template("post")
+    @template.request_template("post", allow_cache=True)
     def get_episode_info(self, epid: int):
         """获取一个漫画章节的信息"""
         return MangaAPIs._API_EP_INFO + MangaAPIs.PARAMS_UNI, {"data": {"id": epid}}

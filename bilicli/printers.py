@@ -136,3 +136,12 @@ Cover       {cover}
     print(f"{len(songlist)} song(s) in total")
     for i, song in enumerate(songlist):
         print("P{i:<4d} au{id:<9d} {title}".format(**song, i=i + 1))
+
+
+def print_series(series_meta: dict[str, Any], series_content: list[dict[str, Any]]):
+    print(
+        '''
+Title       {name}
+series_id = {series_id}
+'''
+)

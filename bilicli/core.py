@@ -8,6 +8,7 @@ from bilicore.threads import (
     SingleMangaChapterThread,
 )
 from . import printers, utils
+from .hints import WorkerThread
 
 
 def check_exceptions(func: Callable[..., Optional[list[Exception]]]):
@@ -22,7 +23,6 @@ def check_exceptions(func: Callable[..., Optional[list[Exception]]]):
 
 
 class CliCore:
-
     def __init__(self, apis: APIContainer) -> None:
         self.__apis = apis
         self._idname_to_procmethod_map: list[tuple[tuple[str, ...], Callable, bool]] = [
@@ -193,5 +193,26 @@ class CliCore:
             ]
         )
 
-    def _video_series_process(self, savedir):
-        return NotImplemented
+    def _video_series_process(
+        self,
+        savedir: Optional[str],
+        *,
+        series_id: int,
+        all_ids: Optional[dict[str, str | int]] = None,
+        **options,
+    ):
+        if not all_ids:
+            all_ids = {}
+        series = self._apis.video.get_series_info(series_id)
+        _, videos = utils.query_all_pages(
+            functools.partial(
+                self._apis.video.get_series_content,
+                series_id=series_id,
+                uid=all_ids.get("uid", 1),
+            ),
+            page_size=100,
+            curr=lambda x: x["page"]["num"],
+            total=lambda x: x["page"]["total"],
+            archives=lambda x: x["archives"]
+        )
+        

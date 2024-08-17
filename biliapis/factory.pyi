@@ -8,9 +8,17 @@ from . import apis
 class APIContainer:
     DEFAULT_HEADERS: dict[str, str]
     VERSION: str
-    wbimanager: CachedWbiManager
-    session: Session
-    extra_data: dict
+
+    @property
+    def wbimanager(self) -> CachedWbiManager: ...
+    @property
+    def session(self) -> Session: ...
+    @property
+    def extra_data(self) -> dict: ...
+    @property
+    def allow_cache(self) -> bool: ...
+    @allow_cache.setter
+    def allow_cache(self, value: bool) -> None: ...
 
     audio: apis.AudioAPIs
     login: apis.LoginAPIs
@@ -20,5 +28,7 @@ class APIContainer:
     video: apis.VideoAPIs
 
 def new_apis(
-    session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None, extra_data: Optional[dict[str, Any]] = None
+    session: Optional[Session] = None,
+    wbimanager: Optional[CachedWbiManager] = None,
+    extra_data: Optional[dict[str, Any]] = None,
 ) -> APIContainer: ...

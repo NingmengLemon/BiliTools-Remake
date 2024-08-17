@@ -47,7 +47,7 @@ class VideoAPIs(template.APITemplate):
     @utils.pick_data()
     @checker.check_abvid
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_video_detail(self, *, avid=None, bvid=None):
         params = utils.remove_none({"aid": avid, "bvid": bvid})
         return VideoAPIs._API_DETAIL, {"params": params}
@@ -123,14 +123,14 @@ class VideoAPIs(template.APITemplate):
     @utils.pick_data()
     @checker.check_abvid
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_pagelist(self, *, avid=None, bvid=None):
         params = utils.remove_none({"aid": avid, "bvid": bvid})
         return VideoAPIs._API_PAGELIST, {"params": params}
 
     @utils.pick_data()
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_season_content(
         self, season_id: int, uid: int, page=1, page_size=100, sort_reverse=False
     ):
@@ -152,7 +152,7 @@ class VideoAPIs(template.APITemplate):
 
     @utils.pick_data()
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_seasons_series_list(self, uid: int, page=1, page_size=20):
         """
         获取用户创建的所有合集和系列，单个合集或系列的内容不完整
@@ -170,7 +170,7 @@ class VideoAPIs(template.APITemplate):
 
     @utils.pick_data()
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_series_list(self, uid: int, page=1, page_size=20):
         """
         获取用户创建的所有系列，单个系列内容不完整
@@ -188,7 +188,7 @@ class VideoAPIs(template.APITemplate):
 
     @utils.pick_data()
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_series_content(
         self, series_id: int, uid: int, page=1, page_size=20, ascending_sort=False
     ):
@@ -208,7 +208,7 @@ class VideoAPIs(template.APITemplate):
 
     @utils.pick_data()
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_series_info(self, series_id: int):
         """获取单个系列的信息"""
         return VideoAPIs._API_SERIES_INFO, {"params": {"series_id": series_id}}

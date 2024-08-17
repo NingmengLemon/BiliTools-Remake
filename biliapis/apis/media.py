@@ -33,26 +33,26 @@ class MediaAPIs(template.APITemplate):
 
     @utils.pick_data("result")
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_section(self, ssid: int):
         """获取剧集的分集信息，需求 season_id"""
         return MediaAPIs._API_SECTION, {"params": {"season_id": ssid}}
 
     @utils.pick_data("result")
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def get_info(self, mdid: int):
         """获取剧集信息，需求 media_id"""
         return MediaAPIs._API_MEDIA, {"params": {"media_id": mdid}}
 
     @utils.pick_data("result")
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def _get_detail_via_ssid(self, ssid: int):
         return MediaAPIs._API_SEASON, {"params": {"season_id": ssid}}
 
     @utils.pick_data("result")
     @checker.check_bilicode()
-    @template.request_template()
+    @template.request_template(allow_cache=True)
     def _get_detail_via_epid(self, epid: int):
         return MediaAPIs._API_SEASON, {"params": {"ep_id": epid}}

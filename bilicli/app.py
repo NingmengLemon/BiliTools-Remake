@@ -8,7 +8,7 @@ import json
 import base64
 import hashlib
 
-from biliapis import new_apis, APIContainer
+from biliapis import new_apis, APIContainer, init_cache
 from biliapis.utils import remove_none
 from bilicore.parser import extract_ids
 from . import printers, login
@@ -20,6 +20,7 @@ class App(CliCore):
         os.environ.get("USERPROFILE", "./data/"), ".bilitools"
     )
     DEFAULT_DATA_FILENAME = "bilidata.json"
+    DEFAULT_CACHE_FILENAME = "bilicache.db"
     VERSION = "1.0.0-alpha"
 
     def __init__(self, args: argparse.Namespace) -> None:
@@ -42,6 +43,12 @@ class App(CliCore):
             print("BiliTools - Remake")
             print(f"API v{self._apis.VERSION}")
             print(f"CLI v{self.VERSION}")
+
+        if not args.no_cache:
+            init_cache(
+                os.path.join(self.DEFAULT_DATADIR_PATH, self.DEFAULT_CACHE_FILENAME),
+                args.cache_expire,
+            )
 
     def _load_apis(self, data_path: str):
         data: Optional[dict] = self._load_data(data_path)
@@ -137,7 +144,7 @@ class App(CliCore):
         for i, func, need_all_ids in self._idname_to_procmethod_map:
             if idname in i:
                 if need_all_ids:
-                    func(savedir, **{idname: idcontent}, **options, ids=ids)
+                    func(savedir, **{idname: idcontent}, **options, all_ids=ids)
                 else:
                     func(savedir, **{idname: idcontent}, **options)
                 return

@@ -1,8 +1,10 @@
 from typing import Any, Optional
+from threading import Lock
 
 from requests import Session, adapters
 
 from .wbi import CachedWbiManager
+from .template import APITemplate
 
 # collect components
 from .constants import HEADERS, VERSION
@@ -21,12 +23,17 @@ class APIContainer:
         self._session = session
         self._wbimanager = wbimanager
         self._extra_data = extra_data
+        self.__components: list[APITemplate] = []
+        self.__allow_cache = True
+        self.__cache_switch_lock = Lock()
         for compcls in components:
+            compinstance = compcls(session=session, wbimanager=wbimanager, extra_data=extra_data)
             setattr(
                 self,
                 compcls.__name__.removesuffix("APIs").lower(),
-                compcls(session=session, wbimanager=wbimanager, extra_data=extra_data),
+                compinstance,
             )
+            self.__components.append(compinstance)
             
     @property
     def extra_data(self):
@@ -39,6 +46,17 @@ class APIContainer:
     @property
     def wbimanager(self):
         return self._wbimanager
+    
+    @property
+    def allow_cache(self):
+        with self.__cache_switch_lock:
+            return self.__allow_cache
+    
+    @allow_cache.setter
+    def allow_cache(self, value: bool):
+        with self.__cache_switch_lock:
+            for comp in self.__components:
+                comp.allow_cache = value
 
 
 def default_session():

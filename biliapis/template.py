@@ -1,5 +1,9 @@
+# pylint: disable=W0212
 from typing import Any, Callable, Literal
 import functools
+from threading import Lock
+import logging
+import pickle
 
 from requests import Session
 
@@ -7,6 +11,7 @@ from .wbi import CachedWbiManager
 from .constants import HEADERS as DEFAULT_HEADERS
 from .error import BiliError
 from .utils import get_csrf
+from . import reqcache
 
 
 __all__ = ["APITemplate", "request_template", "withcsrf"]
@@ -25,6 +30,8 @@ class APITemplate:
         self.__session = session
         self.__wbimanager = wbimanager
         self.__extra_data = extra_data
+        self.__allow_cache_switch_lock = Lock()
+        self.__allow_cache = True
 
     @property
     def _extra_data(self):
@@ -38,9 +45,21 @@ class APITemplate:
     def _wbimanager(self):
         return self.__wbimanager
 
+    @property
+    def allow_cache(self):
+        with self.__allow_cache_switch_lock:
+            return self.__allow_cache
+
+    @allow_cache.setter
+    def allow_cache(self, value: bool):
+        with self.__allow_cache_switch_lock:
+            self.__allow_cache = value
+
 
 def request_template(
-    mod="get", handle: Literal["json", "str", "raw", "bytes"] = "json"
+    mod="get",
+    handle: Literal["json", "str", "bytes"] = "json",
+    allow_cache: bool = False,
 ):
     """
     对 APITemplate 的子类的方法做装饰，简化请求调用
@@ -49,6 +68,8 @@ def request_template(
     headers参数有默认值可省略
 
     handle参数对请求得到的数据做处理
+
+    allow_cache 参数表示这个方法是否允许缓存
     """
 
     def decorator(
@@ -67,22 +88,32 @@ def request_template(
                 url, reqparams = rv, {}
             else:
                 raise ValueError("Not specified return value type: %s" % type(rv))
-            reqparams.setdefault(
-                "headers", self._DEFAULT_HEADERS  # pylint: disable=W0212
-            )
-            with self._session.request(  # pylint: disable=W0212
-                mod, url, **reqparams
-            ) as resp:
+            reqparams.setdefault("headers", self._DEFAULT_HEADERS)
+            csrf = get_csrf(self._session)
+            if allow_cache and self.allow_cache and reqcache.cache:
+                cacheparams = {
+                    "csrf": csrf,
+                    "mod": mod,
+                    "url": url,
+                    "params": reqparams,
+                    "handle": handle,
+                }
+                if (_ := reqcache.cache.get(cacheparams)) is not None:
+                    logging.debug("Use cache: %s %s", mod.upper(), url)
+                    return pickle.loads(_)
+            with self._session.request(mod, url, **reqparams) as resp:
                 resp.raise_for_status()
                 match handle:
                     case "str":
-                        return resp.content.decode("utf-8")
+                        result = resp.content.decode("utf-8")
                     case "bytes":
-                        return resp.content
-                    case "raw":
-                        return resp.raw
+                        result = resp.content
                     case _:
-                        return resp.json()
+                        result = resp.json()
+            if allow_cache and self.allow_cache and reqcache.cache:
+                reqcache.cache.set(cacheparams, pickle.dumps(result))
+                logging.debug("add cache: %s %s", mod.upper(), url)
+            return result
 
         return wrapper
 
@@ -96,7 +127,7 @@ def withcsrf(func):
 
     @functools.wraps(func)
     def wrapper(self: APITemplate, *args, **kwargs):
-        csrf = get_csrf(self._session)  # pylint: disable=W0212
+        csrf = get_csrf(self._session)
         if not csrf:
             raise BiliError(-101, "未登录")
         kwargs["csrf"] = csrf

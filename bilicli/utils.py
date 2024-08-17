@@ -1,4 +1,4 @@
-from typing import Sequence, Optional
+from typing import Sequence, Optional, Callable, Any, NewType, Protocol
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 import time
@@ -101,3 +101,25 @@ def generate_media_ptitle(title, long_title, i=-1, **_):
     res += "_" if res and long_title else ""
     res += long_title or ""
     return res
+
+
+_PageQueryResult = NewType("_PageQueryResult", dict[str, Any])
+
+
+class _PagedQueryFunc(Protocol):
+    def __call__(self, *, page: int, page_size: int) -> _PageQueryResult: ...
+
+
+def query_all_pages(
+    func: _PagedQueryFunc,
+    page_size: int,
+    curr: Callable[[_PageQueryResult], int],
+    total: Callable[[_PageQueryResult], int],
+    archives: Callable[[_PageQueryResult], list[Any]],
+):
+    data = func(page=1, page_size=page_size)
+    pages: list[Any] = archives(data)
+    while (page := curr(data)) < total(data):
+        data = func(page=page + 1, page_size=page_size)
+        pages.extend(archives(data))
+    return data, pages
