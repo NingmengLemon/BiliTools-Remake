@@ -1,7 +1,11 @@
+# pylint: disable=E1101,E1120
+# 不是哥们 pylint你疑似有点不太聪明
+# 好的我承认其实是我装饰器用多了导致的
 import json
 import time
 from http import cookiejar
 import binascii
+import logging
 
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
@@ -44,12 +48,12 @@ class LoginAPIs(template.APITemplate):
     @utils.pick_data()
     @checker.check_bilicode()
     def exit_login(self):
-        data = self.__exit_login_req()  # pylint: disable=E1120
+        data = self.__exit_login_req()
         if "请先登录" in data:
             raise error.BiliError(-101, "未登录")
         data = json.loads(data)
-        if data.get("code") == 0 and hasattr(self._session, "bili_refresh_token"):
-            self._session.bili_refresh_token = None
+        if data.get("code") == 0:
+            self._extra_data["bili_refresh_token"] = None
         return data
 
     @template.request_template("post", "str")
@@ -110,37 +114,6 @@ class LoginAPIs(template.APITemplate):
             "params": {"csrf": csrf, "refresh_token": old_refresh_token}
         }
 
-    def refresh_cookies_flow(self, refresh_token=None):
-        """会在session中小小地塞一个refresh_token，不过没问题都是检查了的
-        
-        ~~没有测试过~~"""
-        if not refresh_token:
-            if hasattr(self._session, "bili_refresh_token"):
-                refresh_token = self._session.bili_refresh_token
-        if not refresh_token:
-            raise ValueError("need refresh_token")
-        # 检查是否需要刷新
-        try:
-            data = self.check_if_cookies_refresh_required()
-        except error.BiliError as e:
-            if e.code == -101:
-                return
-            raise
-        if not data["refresh"]:  # pylint: disable=E1126
-            return
-        ts = data["timestamp"]  # pylint: disable=E1126
-        # 需要刷新，开始
-        corresp = self.get_correspond_path(ts)
-        refresh_csrf = self.get_refresh_csrf(corresp)
-        old_refresh_token = refresh_token
-        refresh_token = self.refresh_cookies(  # pylint: disable=E1101
-            refresh_csrf=refresh_csrf, refresh_token=refresh_token
-        ).get("refresh_token")
-        # 刷新完成，存储，确认
-        setattr(self._session, "bili_refresh_token", refresh_token)
-        self.confirm_refresh_cookies(old_refresh_token=old_refresh_token)
-        return refresh_token
-
 
 class QRLoginAPIs(template.APITemplate):
     _API_LOGIN_URL = (
@@ -162,11 +135,11 @@ class QRLoginAPIs(template.APITemplate):
 
     def poll_login_qrcode(self, qrcode_key):
         data = self.__poll_login_qrcode_req(qrcode_key)
-        if data.get("code", -1) == 0:  # pylint: disable=E1101
-            setattr(
-                self._session,
-                "bili_refresh_token",
-                data.get("refresh_token"),  # pylint: disable=E1101
+        if data.get("code") == 0:
+            self._extra_data["bili_refresh_token"] = data.get("refresh_token")
+            logging.debug(
+                "refresh token write to extra data, %s",
+                data.get("refresh_token"),
             )
         return data
 

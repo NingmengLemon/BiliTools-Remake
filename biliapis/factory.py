@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from requests import Session, adapters
 
@@ -17,23 +17,28 @@ class APIContainer:
     VERSION = VERSION
     DEFAULT_HEADERS: dict[str, str] = HEADERS.copy()
 
-    def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
+    def __init__(self, session: Session, wbimanager: CachedWbiManager, extra_data: dict) -> None:
         self._session = session
         self._wbimanager = wbimanager
+        self._extra_data = extra_data
         for compcls in components:
             setattr(
                 self,
                 compcls.__name__.removesuffix("APIs").lower(),
-                compcls(session=session, wbimanager=wbimanager),
+                compcls(session=session, wbimanager=wbimanager, extra_data=extra_data),
             )
-
+            
     @property
-    def wbimanager(self):
-        return self._wbimanager
+    def extra_data(self):
+        return self._extra_data
 
     @property
     def session(self):
         return self._session
+
+    @property
+    def wbimanager(self):
+        return self._wbimanager
 
 
 def default_session():
@@ -47,10 +52,11 @@ def default_session():
 
 
 def new_apis(
-    session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None
+    session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None, extra_data: Optional[dict[str, Any]] = None
 ) -> APIContainer:
     session = session if session else default_session()
     wbimanager = wbimanager if wbimanager else CachedWbiManager(session)
+    extra_data = extra_data if extra_data else {}
 
-    container = APIContainer(session=session, wbimanager=wbimanager)
+    container = APIContainer(session=session, wbimanager=wbimanager, extra_data=extra_data)
     return container

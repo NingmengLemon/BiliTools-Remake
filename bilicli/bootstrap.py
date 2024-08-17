@@ -8,88 +8,118 @@ LOGFILE_PATH = "./run.log"
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        prog="BiliTools-Remake CLI",
+        prog="bilitools-cli",
         description="A simple media downloader for Bilibili",
     )
 
-    parser.add_argument("--version", action="store_true", help="打印版本")
-
-    #
-    parser.add_argument("--debug", action="store_true", help="启用调试")
-
-    #
     parser.add_argument(
-        "--session",
+        "-v", "--version", action="store_true", help="Print version info"
+    )
+
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+
+    parser.add_argument(
+        "--session-filepath",
         type=str,
-        help="指定要加载的Session文件。注意请勿加载未信任的文件。",
+        help="Specify path to load session file (a pickle file). DO NOT LOAD UNTRUSTED session file!",
     )
 
     parser.add_argument(
-        "--max-worker", type=int, default=4, help="指定最大的同时进行的线程数"
+        "--data-filepath",
+        type=str,
+        help="Specify path to load extra data (a json file).",
     )
 
-    #
-    parser.add_argument("--login", action="store_true", help="进行登录流程")
+    parser.add_argument(
+        "--max-worker",
+        type=int,
+        default=4,
+        help="Specify the number of max concurrent worker threads, default to 4",
+    )
 
-    parser.add_argument("--logout", action="store_true", help="进行登出流程")
+    parser.add_argument("--login", action="store_true", help="Do login and exit")
 
-    # 媒体来源，唯一必选参数
-    parser.add_argument("-i", "--input", type=str, help="媒体来源")
+    parser.add_argument("--logout", action="store_true", help="Do logout and exit")
 
-    # 是否只下载音频
-    parser.add_argument("--audio-only", action="store_true", help="只抽取视频的音轨")
+    parser.add_argument(
+        "--no-cookies-refresh", action="store_true", help="Don't do cookies refresh"
+    )
 
-    parser.add_argument("--dry-run", action="store_true", help="只打印信息不进行下载")
+    parser.add_argument("-i", "--input", type=str, help="Specify media source")
 
-    # 字幕语种
+    parser.add_argument(
+        "--audio-only",
+        action="store_true",
+        help="For videos, only download their audio track",
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print info of source and exit, instead of downloading",
+    )
+
     parser.add_argument(
         "--subtitle-lang",
         type=str,
-        help="指定字幕语种，如`zh-cn`，可传入`all`以下载所有可用的语种",
+        help="For videos, specify language of subtitle to download like `zh-cn` if available. Give `all` to download all available.",
     )
 
-    # 字幕类型
     parser.add_argument(
         "--subtitle-format",
         type=str,
         choices=["vtt", "srt", "lrc"],
-        help="指定字幕格式，可选 vtt / srt / lrc",
+        default="vtt",
+        help="For videos, choose subtitle format from `vtt` / `srt` / `lrc`, default to `vtt`",
     )
 
-    # 视频编码
     parser.add_argument(
         "--video-codec",
         type=str,
         choices=["avc", "hevc"],
-        help="指定视频编码，可选 avc / hevc",
+        default="avc",
+        help="For videos, choose codec of video stream from `avc` / `hevc` if available.",
     )
 
-    # 视频质量
-    parser.add_argument("--video-quality", type=str, help="指定视频质量")
+    parser.add_argument(
+        "--video-quality",
+        type=str,
+        help="Specify video stream quality, leave blank for highest. Mismatch means highest too.",
+    )
 
-    # 音频质量
-    parser.add_argument("--audio-quality", type=str, help="指定音频质量")
+    parser.add_argument(
+        "--audio-quality",
+        type=str,
+        help="Specify audio stream quality, leave blank for highest. Mismatch means highest too.",
+    )
 
-    # 分P索引
     parser.add_argument(
         "--index",
         type=str,
-        help="从1始计的分P索引，可使用半角逗号分隔多个。省略时指定所有分P。",
+        help="""Specify index of episode to download, count from 1. 
+        Use comma to split multiple, use hyphen to give a range.
+        Use --dry-run to preview index if not sure.""",
     )
 
-    # 是否下载歌词
     parser.add_argument(
-        "--lyrics", action="store_true", help="如果来源为音乐则下载歌词"
+        "--need-lyrics",
+        action="store_true",
+        help="For music, download their lyrics if available",
     )
 
-    # 是否下载封面
-    parser.add_argument("--cover", action="store_true", help="如果来源为音乐则下载封面")
+    parser.add_argument("--need-cover", action="store_true", help="Download cover")
 
-    parser.add_argument("--no-metadata", action="store_true", help="不要写入元数据")
-
-    # 输出路径，唯一必选参数
     parser.add_argument(
-        "-o", "--output", type=str, help="指定输出路径，省略时同 --dry-run"
+        "--no-metadata",
+        action="store_true",
+        help="Don't write metadata into output file",
+    )
+
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Specify path to a folder to store output file. Leaving it blank is equal to use --dry-run",
     )
 
     return parser.parse_args()

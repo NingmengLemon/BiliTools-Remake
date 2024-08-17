@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from requests import Session
 
@@ -10,6 +10,7 @@ class APIContainer:
     VERSION: str
     wbimanager: CachedWbiManager
     session: Session
+    extra_data: dict
 
     audio: apis.AudioAPIs
     login: apis.LoginAPIs
@@ -19,5 +20,5 @@ class APIContainer:
     video: apis.VideoAPIs
 
 def new_apis(
-    session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None
+    session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None, extra_data: Optional[dict[str, Any]] = None
 ) -> APIContainer: ...

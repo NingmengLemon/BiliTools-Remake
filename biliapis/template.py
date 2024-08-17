@@ -19,9 +19,16 @@ class APITemplate:
 
     _DEFAULT_HEADERS = DEFAULT_HEADERS.copy()
 
-    def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
+    def __init__(
+        self, session: Session, wbimanager: CachedWbiManager, extra_data: dict
+    ) -> None:
         self.__session = session
         self.__wbimanager = wbimanager
+        self.__extra_data = extra_data
+
+    @property
+    def _extra_data(self):
+        return self.__extra_data
 
     @property
     def _session(self):

@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 from http.cookiejar import MozillaCookieJar
 
 from biliapis.template import APITemplate
@@ -18,9 +18,6 @@ class LoginAPIs(APITemplate):
         self, refresh_token: str, refresh_csrf: str
     ) -> dict[Literal["status", "message", "refresh_token"], Literal[0] | str]: ...
     def confirm_refresh_cookies(self, old_refresh_token: str) -> None: ...
-    def refresh_cookies_flow(
-        self, refresh_token: Optional[str] = None
-    ) -> Optional[str]: ...
 
 class QRLoginAPIs(APITemplate):
     def get_login_qrcode_url(self) -> dict[Literal["qrcode_key", "url"], str]: ...

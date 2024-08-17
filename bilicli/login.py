@@ -17,17 +17,17 @@ def get_login_info_noexc(apis: APIContainer):
 def logout_process(apis: APIContainer):
     try:
         apis.login.exit_login()
-        print("已成功登出。")
+        print("Logged out successfully.")
     except BiliError as e:
         if e.code == -101:
-            print("登出不成功，因为根本没有登录")
+            print("Could not logout: not logged in at all!")
         else:
             raise
 
 
 def login_process(apis: APIContainer):
     if _ := get_login_info_noexc(apis):
-        print("已经登录过了！以下是用户信息：")
+        print("Already logged in. User info below:")
         print_login_info(_)
         return
 
@@ -53,18 +53,57 @@ def login_process(apis: APIContainer):
             url = _["url"]
             match status:
                 case 0:
-                    print("登录成功！")
+                    print("\nLogged in successfully!")
                     logging.debug("crossdomain url: %s", url)
                     return
                 case 86038:
-                    print("二维码超时。按 Enter 重试，或输入任意内容再按 Enter 退出")
+                    print(
+                        "\nQRCode timed out. Simply press enter to try again, or input something to abort:"
+                    )
                     return None if input() else login_process(apis=apis)
                 case 86090:
-                    print("\r已扫描二维码，请在手机上确认登录...", end="")
+                    print("\rScanned, confirm on your APP", end="")
                 case 86101:
-                    print("\r等待扫描二维码...", end="")
+                    print("\rWaiting for scanning...", end="")
             time.sleep(2)
         except Exception as e:
             logging.error("Error during login process: %s", e)
             break
     return
+
+
+def refresh_cookies_flow(apis: APIContainer, refresh_token=None):
+    """会在extra_data里塞一个refresh_token
+
+    ~~但是还没有测试过~~"""
+    logging.info("Attempting to refresh cookies...")
+    if not refresh_token:
+        refresh_token = apis.extra_data.get("bili_refresh_token")
+    if not refresh_token:
+        logging.warning("no refresh token found")
+        return
+    # 检查是否需要刷新
+    try:
+        data = apis.login.check_if_cookies_refresh_required()
+    except BiliError as e:
+        if e.code == -101:
+            logging.warning("not logged in")
+            return
+        raise
+    if not data["refresh"]:
+        logging.info("no need to refresh cookies")
+        return
+    logging.info("start to refresh cookies...")
+    ts = data["timestamp"]
+    # 需要刷新，开始
+    corresp = apis.login.get_correspond_path(ts)
+    refresh_csrf = apis.login.get_refresh_csrf(corresp)
+    old_refresh_token = refresh_token
+    refresh_token = apis.login.refresh_cookies(
+        refresh_csrf=refresh_csrf, refresh_token=refresh_token
+    ).get("refresh_token")
+    # 刷新完成，存储，确认
+    apis.extra_data["bili_refresh_token"] = refresh_token
+    apis.login.confirm_refresh_cookies(old_refresh_token=old_refresh_token)
+    logging.info("refresh cookies completed")
+    return refresh_token

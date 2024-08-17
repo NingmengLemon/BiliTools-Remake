@@ -2,7 +2,11 @@ from typing import Optional, Any, Callable
 import functools
 
 from biliapis import APIContainer
-from bilicore.threads import SingleVideoThread, SingleAudioThread, SingleMangaChapterThread
+from bilicore.threads import (
+    SingleVideoThread,
+    SingleAudioThread,
+    SingleMangaChapterThread,
+)
 from . import printers, utils
 
 
@@ -20,6 +24,13 @@ def check_exceptions(func: Callable[..., Optional[list[Exception]]]):
 class CliCore:
     def __init__(self, apis: APIContainer) -> None:
         self.__apis = apis
+        self._idname_to_procmethod_map = (
+            (("bvid", "avid"), self._common_video_process),
+            (("mdid", "ssid", "epid"), self._media_process),
+            (("auid",), self._audio_process),
+            (("amid",), self._audio_playmenu_process),
+            (("mcid",), self._manga_process),
+        )
 
     @property
     def _apis(self):

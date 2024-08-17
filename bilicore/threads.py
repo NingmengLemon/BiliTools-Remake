@@ -118,13 +118,13 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         "video_codec",
         "subtitle_lang",
         "subtitle_format",
-        "cover",
+        "need_cover",
         "no_metadata",
         # 预处理数据
         "stream_data",
         "video_data",
         "player_info",
-        # 更正字段，仅影响输出文件的名称
+        # 更正字段，仅影响输出文件的名称、进度条提示信息和写入的元数据
         "title",
         "pindex",
         "ptitle",
@@ -156,7 +156,7 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         self._aq: str | int = options.get("audio_quality", "max")
         self._sv: Optional[str | Literal["all"]] = options.get("subtitle_lang")
         self._sf: Literal["vtt", "srt", "lrc"] = options.get("subtitle_format", "vtt")
-        self._need_cover: bool = bool(options.get("cover", False))
+        self._need_cover: bool = bool(options.get("need_cover", False))
         self._need_metadata: bool = not bool(options.get("no_metadata", False))
 
         self._video_data: Optional[dict[str, Any]] = options.get("video_data")
@@ -348,8 +348,8 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
 class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin):
     VALID_OPTIONS = (
         "quality",
-        "lyrics",
-        "cover",
+        "need_lyrics",
+        "need_cover",
         "no_metadata"
         # 预处理数据
         "audio_data",
@@ -363,8 +363,8 @@ class SingleAudioThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         self._savedir = savedir
         options = {k: v for k, v in options.items() if k in self.VALID_OPTIONS}
         self._quality: Optional[Literal[0, 1, 2, 3]] = options.get("quality", 3)
-        self._need_lrc = bool(options.get("lyrics", False))
-        self._need_cover = bool(options.get("cover", False))
+        self._need_lrc = bool(options.get("need_lyrics", False))
+        self._need_cover = bool(options.get("need_cover", False))
         self._need_metadata = not bool(options.get("no_metadata", False))
         self._info: Optional[dict[str, Any]] = options.get("audio_data")
 

@@ -2,13 +2,10 @@ from typing import Any, Generator, Callable
 import functools
 import logging
 
-from requests import Session
-
 from .. import template
 from .. import checker
 from .. import utils
-from biliapis.error import BiliError
-from biliapis.wbi import CachedWbiManager
+from ..error import BiliError
 
 
 class VideoAPIs(template.APITemplate):
@@ -39,8 +36,9 @@ class VideoAPIs(template.APITemplate):
         "https://api.bilibili.com/x/series/series"
     )
 
-    def __init__(self, session: Session, wbimanager: CachedWbiManager) -> None:
-        super().__init__(session, wbimanager)
+    @functools.wraps(template.APITemplate.__init__)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         factory = self.__get_stream_dash_fallback_factory()
         self._get_stream_dash_fallback = utils.fallback((BiliError,))(next(factory))
         for func in factory:
