@@ -17,7 +17,7 @@ from .core import CliCore
 
 class App(CliCore):
     DEFAULT_DATADIR_PATH = os.path.join(
-        os.environ.get("USERPROFILE", "./data/"), ".bilitools"
+        os.path.expanduser("~"), ".bilitools"
     )
     DEFAULT_DATA_FILENAME = "bilidata.json"
     DEFAULT_CACHE_FILENAME = "bilicache.db"
