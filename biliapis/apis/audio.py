@@ -17,7 +17,7 @@ class AudioAPIs(template.APITemplate):
     @template.request_template(allow_cache=True)
     def get_info(self, auid):
         """获取单曲信息"""
-        return AudioAPIs._API_INFO, {"params": {"sid": auid}}
+        return self._API_INFO, {"params": {"sid": auid}}
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
@@ -28,7 +28,7 @@ class AudioAPIs(template.APITemplate):
 
         quality = 0(128K) / 1(192K) / 2(320K) / 3(FLAC)
         """
-        return AudioAPIs._API_STREAM, {
+        return self._API_STREAM, {
             "params": {
                 "songid": auid,
                 "quality": quality,
@@ -43,14 +43,14 @@ class AudioAPIs(template.APITemplate):
     @template.request_template(allow_cache=True)
     def get_tags(self, auid):
         """获取单曲标签"""
-        return AudioAPIs._API_TAGS, {"params": {"sid": auid}}
+        return self._API_TAGS, {"params": {"sid": auid}}
 
     @utils.pick_data()
     @checker.check_bilicode(msgkey="msg")
     @template.request_template(allow_cache=True)
     def get_playmenu_content(self, amid, page=1, page_size=100):
         """获取歌单"""
-        return AudioAPIs._API_PLAYMENU_CONTENT, {
+        return self._API_PLAYMENU_CONTENT, {
             "params": {"sid": amid, "pn": page, "ps": page_size}
         }
 
@@ -58,6 +58,6 @@ class AudioAPIs(template.APITemplate):
     @checker.check_bilicode(msgkey="msg")
     @template.request_template(allow_cache=True)
     def get_playmenu_info(self, amid):
-        return AudioAPIs._API_PLAYMENU_INFO, {
+        return self._API_PLAYMENU_INFO, {
             "params": {"sid": amid},
         }

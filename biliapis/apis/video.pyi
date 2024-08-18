@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, Literal
 
 from biliapis.template import APITemplate
 
@@ -41,3 +41,12 @@ class VideoAPIs(APITemplate):
         ascending_sort: bool = False,
     ) -> dict[str, Any]: ...
     def get_series_info(self, series_id: int) -> dict[str, Any]: ...
+    def get_all_videos(
+        self,
+        uid: int,
+        page: int = 1,
+        page_size: int = 30,
+        order: Literal["pubdate", "click", "stow"] = "pubdate",
+        tid: int = 0,
+        keyword: Optional[str] = None,
+    ) -> dict[str, Any]: ...

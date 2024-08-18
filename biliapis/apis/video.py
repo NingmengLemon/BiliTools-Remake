@@ -1,4 +1,4 @@
-from typing import Any, Generator, Callable
+from typing import Any, Generator, Callable, Literal, Optional
 import functools
 import logging
 
@@ -35,6 +35,7 @@ class VideoAPIs(template.APITemplate):
     _API_SERIES_INFO = (  # 获取单个series的信息
         "https://api.bilibili.com/x/series/series"
     )
+    _API_USER_VIDEOS = "https://api.bilibili.com/x/space/wbi/arc/search"
 
     @functools.wraps(template.APITemplate.__init__)
     def __init__(self, *args, **kwargs) -> None:
@@ -50,7 +51,7 @@ class VideoAPIs(template.APITemplate):
     @template.request_template(allow_cache=True)
     def get_video_detail(self, *, avid=None, bvid=None):
         params = utils.remove_none({"aid": avid, "bvid": bvid})
-        return VideoAPIs._API_DETAIL, {"params": params}
+        return self._API_DETAIL, {"params": params}
 
     @checker.check_abvid
     def get_stream_dash(self, cid: int, *, avid=None, bvid=None) -> dict[str, Any]:
@@ -78,13 +79,13 @@ class VideoAPIs(template.APITemplate):
     @checker.check_bilicode()
     @template.request_template()
     def _get_stream_dash_wbi(self, params_signed: dict):
-        return VideoAPIs._API_STREAM_WBI, {"params": params_signed}
+        return self._API_STREAM_WBI, {"params": params_signed}
 
     def __get_stream_dash_fallback_factory(self) -> Generator[Callable, None, None]:
         def get_fallback(api: str, params_: dict):
             return api, {"params": params_}
 
-        for a, k in VideoAPIs._APIS_STREAM_FALLBACK:
+        for a, k in self._APIS_STREAM_FALLBACK:
             yield utils.decorate(
                 functools.partial(get_fallback, a),
                 template.request_template(),
@@ -109,7 +110,7 @@ class VideoAPIs(template.APITemplate):
                 }
             )
         )
-        return VideoAPIs._API_PLAYER, {"params": params}
+        return self._API_PLAYER, {"params": params}
 
     @template.request_template(handle="str")
     def get_danmaku(self, cid):
@@ -126,7 +127,7 @@ class VideoAPIs(template.APITemplate):
     @template.request_template(allow_cache=True)
     def get_pagelist(self, *, avid=None, bvid=None):
         params = utils.remove_none({"aid": avid, "bvid": bvid})
-        return VideoAPIs._API_PAGELIST, {"params": params}
+        return self._API_PAGELIST, {"params": params}
 
     @utils.pick_data()
     @checker.check_bilicode()
@@ -137,7 +138,7 @@ class VideoAPIs(template.APITemplate):
         """
         获取用户创建的合集中的视频列表
         """
-        return VideoAPIs._API_SEASON_CONTENT, {
+        return self._API_SEASON_CONTENT, {
             "params": self._wbimanager.sign(
                 {
                     "mid": uid,
@@ -157,7 +158,7 @@ class VideoAPIs(template.APITemplate):
         """
         获取用户创建的所有合集和系列，单个合集或系列的内容不完整
         """
-        return VideoAPIs._API_SEASONS_SERIES_LIST, {
+        return self._API_SEASONS_SERIES_LIST, {
             "params": self._wbimanager.sign(
                 {
                     "mid": uid,
@@ -175,7 +176,7 @@ class VideoAPIs(template.APITemplate):
         """
         获取用户创建的所有系列，单个系列内容不完整
         """
-        return VideoAPIs._API_SERIES_LIST, {
+        return self._API_SERIES_LIST, {
             "params": self._wbimanager.sign(
                 {
                     "mid": uid,
@@ -195,7 +196,7 @@ class VideoAPIs(template.APITemplate):
         """
         获取单个系列的内容
         """
-        return VideoAPIs._API_SERIES_CONTENT, {
+        return self._API_SERIES_CONTENT, {
             "params": {
                 "mid": uid,
                 "series_id": series_id,
@@ -211,4 +212,31 @@ class VideoAPIs(template.APITemplate):
     @template.request_template(allow_cache=True)
     def get_series_info(self, series_id: int):
         """获取单个系列的信息"""
-        return VideoAPIs._API_SERIES_INFO, {"params": {"series_id": series_id}}
+        return self._API_SERIES_INFO, {"params": {"series_id": series_id}}
+
+    @utils.pick_data()
+    @checker.check_bilicode()
+    @template.request_template(allow_cache=True)
+    def get_all_videos(
+        self,
+        uid: int,
+        page: int = 1,
+        page_size: int = 30,
+        order: Literal["pubdate", "click", "stow"] = "pubdate",
+        tid: int = 0,
+        keyword: Optional[str] = None,
+    ):
+        # not available yet
+        params = self._wbimanager.sign(
+            utils.remove_none(
+                {
+                    "mid": uid,
+                    "order": order,
+                    "tid": tid,
+                    "keyword": keyword,
+                    "pn": page,
+                    "ps": page_size,
+                }
+            )
+        )
+        return self._API_USER_VIDEOS, {"params": params}

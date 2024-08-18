@@ -44,6 +44,10 @@ class LoginAPIs(template.APITemplate):
     _API_REFRESH_CONFIRM = (
         "https://passport.bilibili.com/x/passport-login/web/confirm/refresh"
     )
+    _API_BUVID = "https://api.bilibili.com/x/frontend/finger/spi"
+    _API_ACTIVATE_COOKIES = (
+        "https://api.bilibili.com/x/internal/gaia-gateway/ExClimbWuzhi"
+    )
 
     @utils.pick_data()
     @checker.check_bilicode()
@@ -59,21 +63,21 @@ class LoginAPIs(template.APITemplate):
     @template.request_template("post", "str")
     @template.withcsrf
     def __exit_login_req(self, csrf):
-        return LoginAPIs._API_EXIT, {"data": {"biliCSRF": csrf}}
+        return self._API_EXIT, {"data": {"biliCSRF": csrf}}
 
     @utils.pick_data()
     @checker.check_bilicode()
     @template.request_template()
     def get_login_info(self):
         """获得当前登录用户的信息"""
-        return LoginAPIs._API_INFO
+        return self._API_INFO
 
     @utils.pick_data()
     @checker.check_bilicode()
     @template.request_template()
     @template.withcsrf
     def check_if_cookies_refresh_required(self, csrf=None):
-        return LoginAPIs._API_CHECK_COOKIES_REFRESH, {"params": {"csrf": csrf}}
+        return self._API_CHECK_COOKIES_REFRESH, {"params": {"csrf": csrf}}
 
     @staticmethod
     def get_correspond_path(ts: int):
@@ -89,14 +93,14 @@ class LoginAPIs(template.APITemplate):
 
     @template.request_template(handle="str")
     def __get_refresh_csrf_req(self, corresp: str):
-        return LoginAPIs._API_REFRESH_CSRF + corresp
+        return self._API_REFRESH_CSRF + corresp
 
     @utils.pick_data()
     @checker.check_bilicode()
     @template.request_template("post")
     @template.withcsrf
     def refresh_cookies(self, refresh_token, refresh_csrf, csrf=None):
-        return LoginAPIs._API_REFRESH_COOKEIS, {
+        return self._API_REFRESH_COOKEIS, {
             "params": {
                 "refresh_token": refresh_token,
                 "source": "main_web",
@@ -110,9 +114,15 @@ class LoginAPIs(template.APITemplate):
     @template.request_template("post")
     @template.withcsrf
     def confirm_refresh_cookies(self, old_refresh_token, csrf=None):
-        return LoginAPIs._API_REFRESH_CONFIRM, {
+        return self._API_REFRESH_CONFIRM, {
             "params": {"csrf": csrf, "refresh_token": old_refresh_token}
         }
+
+    @utils.pick_data()
+    @checker.check_bilicode()
+    @template.request_template()
+    def get_buvid(self):
+        return self._API_BUVID
 
 
 class QRLoginAPIs(template.APITemplate):
@@ -131,9 +141,16 @@ class QRLoginAPIs(template.APITemplate):
         获取到的URL生成为二维码供用户扫描，
         qrcode_key传给poll进行扫描状态轮询
         """
-        return QRLoginAPIs._API_LOGIN_URL, {}
+        return self._API_LOGIN_URL, {}
 
     def poll_login_qrcode(self, qrcode_key):
+        """
+        使用qrcode_key进行扫描状态轮询
+
+        成功后会自动设置cookies并返回一个跨域登录URL和refresh_token
+
+        会自动记录refresh_token
+        """
         data = self.__poll_login_qrcode_req(qrcode_key)
         if data.get("code") == 0:
             self._extra_data["bili_refresh_token"] = data.get("refresh_token")
@@ -147,12 +164,7 @@ class QRLoginAPIs(template.APITemplate):
     @checker.check_bilicode()
     @template.request_template()
     def __poll_login_qrcode_req(self, qrcode_key):
-        """
-        使用qrcode_key进行扫描状态轮询
-
-        成功后会自动设置cookies并返回一个跨域登录URL和refresh_token
-        """
-        return QRLoginAPIs._API_POLL, {"params": {"qrcode_key": qrcode_key}}
+        return self._API_POLL, {"params": {"qrcode_key": qrcode_key}}
 
     @staticmethod
     def cookiejar_from_crossdomain_url(url: str):
