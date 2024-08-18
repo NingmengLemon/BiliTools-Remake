@@ -140,8 +140,34 @@ Cover       {cover}
 
 def print_series(series_meta: dict[str, Any], series_content: list[dict[str, Any]]):
     print(
-        '''
+        """
 Title       {name}
-series_id = {series_id}
-'''
-)
+series_id={series_id} / uid={mid}
+
+Desc
+{description}
+
+{total} video(s) in total""".format(
+            **series_meta
+        )
+    )
+    for i, video in enumerate(series_content):
+        print("P{i:<4d} {bvid} {title}".format(**video, i=i + 1))
+    print()
+
+
+def print_season(season_meta: dict[str, Any], archives: list[dict[str, Any]]):
+    print(
+        """
+Title       {name}
+season_id={season_id} / uid={mid}
+Cover       {cover}
+
+Desc
+{description}
+
+{total} video(s) in total""".format(**season_meta)
+    )
+    for i, video in enumerate(archives):
+        print("P{i:<4d} {bvid} {title}".format(**video, i=i + 1))
+    print()

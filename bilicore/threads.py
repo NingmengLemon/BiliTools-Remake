@@ -11,6 +11,8 @@ from bilicore.downloader import download_common
 from bilicore.parser import select_quality
 from bilicore.utils import filename_escape, merge_avfile, convert_audio
 
+# 写得最史的地方
+
 
 class ThreadProgressMixin:
     def __init__(self) -> None:
@@ -181,7 +183,10 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         cid = self._cid
         pindex = cidlist.index(cid)
         self._report_progress(
-            pgr_name=f"P{pindex+1 if self._correct_pindex is None else self._correct_pindex}"
+            pgr_name="{bvid} P{p}".format(
+                bvid=vdata["bvid"],
+                p=pindex + 1 if self._correct_pindex is None else self._correct_pindex,
+            )
         )
         bvid = vdata["bvid"]
         player_info = self._player_info or self._apis.video.get_player_info(

@@ -37,6 +37,12 @@ def test_get_pagelist():
     dump_data("video_pagelist.json", pl)
 
 
+def test_get_user_videos():
+    uid = 297786973
+    # not implemented
+    # dump_data("user_all_videos.json", apis.video.get_all_videos(uid, page_size=30))
+
+
 def test_videolist_related():
     uid = 37737161
     seaid = 587216

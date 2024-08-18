@@ -53,7 +53,6 @@ class DownloadStatus(Enum):
     ERROR = 3
 
 
-# experimenting
 class DownloadThread(threading.Thread):
     def __init__(
         self,
@@ -206,6 +205,7 @@ class SimpleDownloadThreadList(list[DownloadThread]):
         return bool(sum(t.is_alive() for t in self))
 
 
+# 并未实际使用
 class MultiThreadDownloader(threading.Thread):
     """下载一个文件。如果服务器支持的话就采用多线程
 

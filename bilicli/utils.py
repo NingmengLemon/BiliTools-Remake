@@ -7,6 +7,7 @@ from threading import Lock
 
 from tqdm import tqdm
 
+from biliapis import APIContainer
 from .hints import WorkerThread
 
 
@@ -119,7 +120,19 @@ def query_all_pages(
 ):
     data = func(page=1, page_size=page_size)
     pages: list[Any] = archives(data)
-    while (page := curr(data)) < total(data):
-        data = func(page=page + 1, page_size=page_size)
+    while (page_num := curr(data)) < total(data):
+        data = func(page=page_num + 1, page_size=page_size)
         pages.extend(archives(data))
     return data, pages
+
+
+def process_videolist_to_pagelist(
+    apis: APIContainer, videolist: list[dict[str, Any]], pindexs: set[int]
+) -> list[tuple[str, int]]:
+    result = []
+    for i, video in enumerate(videolist):
+        if i + 1 in pindexs or not pindexs:
+            bvid = video["bvid"]
+            pagelist = apis.video.get_pagelist(bvid=bvid)
+            result.extend([(bvid, page["cid"]) for page in pagelist])
+    return result

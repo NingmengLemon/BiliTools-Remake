@@ -115,7 +115,6 @@ class App(CliCore):
             print("Already logged in.")
             printers.print_login_info(_)
             if not args.no_cookies_refresh:
-                print("Attemping to refresh cookies...")
                 login.refresh_cookies_flow(self._apis)
         else:
             print("Not logged in. Some resources will be unavailable.\n")

@@ -1,5 +1,6 @@
 from typing import Optional, Any, Callable
 import functools
+import math
 
 from biliapis import APIContainer
 from bilicore.threads import (
@@ -8,7 +9,6 @@ from bilicore.threads import (
     SingleMangaChapterThread,
 )
 from . import printers, utils
-from .hints import WorkerThread
 
 
 def check_exceptions(func: Callable[..., Optional[list[Exception]]]):
@@ -31,6 +31,8 @@ class CliCore:
             (("auid",), self._audio_process, False),
             (("amid",), self._audio_playmenu_process, False),
             (("mcid",), self._manga_process, False),
+            (("series_id",), self._video_series_process, True),
+            (("season_id",), self._video_season_process, True),
         ]
 
     @property
@@ -193,6 +195,7 @@ class CliCore:
             ]
         )
 
+    @check_exceptions
     def _video_series_process(
         self,
         savedir: Optional[str],
@@ -203,7 +206,7 @@ class CliCore:
     ):
         if not all_ids:
             all_ids = {}
-        series = self._apis.video.get_series_info(series_id)
+        series = self._apis.video.get_series_info(series_id)["meta"]
         _, videos = utils.query_all_pages(
             functools.partial(
                 self._apis.video.get_series_content,
@@ -212,7 +215,66 @@ class CliCore:
             ),
             page_size=100,
             curr=lambda x: x["page"]["num"],
-            total=lambda x: x["page"]["total"],
-            archives=lambda x: x["archives"]
+            total=lambda x: math.ceil(x["page"]["total"] / x["page"]["size"]),
+            archives=lambda x: x["archives"],
         )
-        
+        printers.print_series(series, videos)
+        if not savedir:
+            return
+        pindexs = utils.parse_index_option(options.get("index"))
+        print("preparing...")
+        videos_to_handle = videos_to_handle = utils.process_videolist_to_pagelist(
+            self._apis, videos, pindexs
+        )
+        if not videos_to_handle:
+            return
+        return utils.run_threads(
+            [
+                SingleVideoThread(
+                    self._apis, cid=cid, bvid=bvid, savedir=savedir, **options
+                )
+                for bvid, cid in videos_to_handle
+            ]
+        )
+
+    @check_exceptions
+    def _video_season_process(
+        self,
+        savedir: Optional[str],
+        *,
+        season_id: int,
+        all_ids: Optional[dict[str, str | int]] = None,
+        **options,
+    ):
+        if not all_ids:
+            all_ids = {}
+        season, videos = utils.query_all_pages(
+            functools.partial(
+                self._apis.video.get_season_content,
+                season_id=season_id,
+                uid=all_ids.get("uid", 1),
+            ),
+            page_size=100,
+            curr=lambda x: x["page"]["page_num"],
+            total=lambda x: math.ceil(x["page"]["total"] / x["page"]["page_size"]),
+            archives=lambda x: x["archives"],
+        )
+        season = season["meta"]
+        printers.print_season(season, videos)
+        if not savedir:
+            return
+        pindexs = utils.parse_index_option(options.get("index"))
+        print("preparing...")
+        videos_to_handle = utils.process_videolist_to_pagelist(
+            self._apis, videos, pindexs
+        )
+        if not videos_to_handle:
+            return
+        return utils.run_threads(
+            [
+                SingleVideoThread(
+                    self._apis, cid=cid, bvid=bvid, savedir=savedir, **options
+                )
+                for bvid, cid in videos_to_handle
+            ]
+        )
