@@ -65,7 +65,7 @@ def parse_arguments():
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Print info of source and exit, instead of downloading",
+        help="Only print info of source and soon exit, without downloading",
     )
 
     parser.add_argument(
