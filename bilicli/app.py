@@ -10,6 +10,7 @@ import hashlib
 
 from biliapis import new_apis, APIContainer, init_cache
 from biliapis.utils import remove_none
+import bilicore
 from bilicore.parser import extract_ids
 from bilicore.utils import check_ffmpeg
 from . import printers, login
@@ -20,7 +21,7 @@ class App(CliCore):
     DEFAULT_DATADIR_PATH = os.path.join(os.path.expanduser("~"), ".bilitools")
     DEFAULT_DATA_FILENAME = "bilidata.json"
     DEFAULT_CACHE_FILENAME = "bilicache.db"
-    VERSION = "1.0.0-alpha"
+    VERSION = "1.0.0-beta"
 
     def __init__(self, args: argparse.Namespace) -> None:
         self._args = args
@@ -39,19 +40,22 @@ class App(CliCore):
         atexit.register(self._save_all)
 
         if args.version:
-            print("BiliTools - Remake")
-            print(f"API v{self._apis.VERSION}")
-            print(f"CLI v{self.VERSION}")
+            print("\nBiliTools - Remake")
+            print(f"API  v{self._apis.VERSION}")
+            print(f"Core v{bilicore.VERSION}")
+            print(f"CLI  v{self.VERSION}\n")
 
         if not args.no_cache:
             init_cache(
                 os.path.join(self.DEFAULT_DATADIR_PATH, self.DEFAULT_CACHE_FILENAME),
                 args.cache_expire,
             )
-            
+
         if not check_ffmpeg():
             print("\nFFmpeg not found!!")
-            print("Program cannot function normally without FFmpeg, consider install it.\n")
+            print(
+                "Program cannot function normally without FFmpeg, consider install it.\n"
+            )
 
     def _load_apis(self, data_path: str):
         data: Optional[dict] = self._load_data(data_path)
@@ -105,6 +109,9 @@ class App(CliCore):
 
     def _main_process(self, args: argparse.Namespace):
         apis = self._apis
+        
+        if args.version:
+            return
 
         if args.login:
             login.login_process(apis)

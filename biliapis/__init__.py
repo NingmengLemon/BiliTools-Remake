@@ -6,6 +6,7 @@ from .wbi import CachedWbiManager
 from .constants import HEADERS as _HEADERS
 from .reqcache import init as init_cache
 
+
 HEADERS = _HEADERS.copy()
 
 __all__ = [

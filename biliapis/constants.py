@@ -1,4 +1,4 @@
-VERSION = "2.0.0-alpha"
+VERSION = "2.0.0-beta"
 
 # import 之后请务必 copy 一下再做修改
 

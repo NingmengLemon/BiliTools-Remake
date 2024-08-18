@@ -13,13 +13,13 @@ def parse_arguments():
     )
 
     parser.add_argument(
-        "-v", "--version", action="store_true", help="Print version info"
+        "-v", "--version", action="store_true", help="Print version info and exit"
     )
 
     parser.add_argument(
         "--debug",
         action="store_true",
-        help="Enable debug mode. Notice debug log contains personal info!",
+        help="Enable debug mode",
     )
 
     parser.add_argument(
