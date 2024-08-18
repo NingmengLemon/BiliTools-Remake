@@ -27,7 +27,10 @@ def call_ffmpeg(*args, check=True):
 
 
 def check_ffmpeg():
-    return call_ffmpeg("-h", check=False) == 0
+    try:
+        return call_ffmpeg("-h", check=False) == 0
+    except FileNotFoundError:
+        return False
 
 
 def merge_avfile(
