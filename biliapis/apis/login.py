@@ -6,11 +6,11 @@ import time
 from http import cookiejar
 import binascii
 import logging
+import re
 
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
-from lxml import etree
 
 from .. import checker
 from .. import utils
@@ -86,10 +86,10 @@ class LoginAPIs(template.APITemplate):
         return binascii.b2a_hex(encrypted).decode()
 
     def get_refresh_csrf(self, correspond_path):
-        html = etree.fromstring(
-            self.__get_refresh_csrf_req(correspond_path), etree.HTMLParser()
-        )
-        return html.xpath("//div[id='1-name']/text()")
+        html =  self.__get_refresh_csrf_req(correspond_path)
+        if _ := re.search(r'<div id="1-name">([a-z0-9]+?)</div>', html):
+            return _.group(1)
+        raise error.BiliError(-400)
 
     @template.request_template(handle="str")
     def __get_refresh_csrf_req(self, corresp: str):
