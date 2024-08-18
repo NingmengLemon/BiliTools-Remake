@@ -1,6 +1,6 @@
 # BiliTools-Remake
 
-A simple utility to download media on Bilibili, the successor(?) of [BiliTools](https://github.com/NingmengLemon/BiliTools). Both of them are self-use-oriented.
+A simple utility to download media from Bilibili, the successor(?) of [BiliTools](https://github.com/NingmengLemon/BiliTools). Both of them are self-use-oriented.
 
 > ~~Actually just a nerd's self-entertaining toy lol.~~
 
@@ -74,8 +74,28 @@ options:
 
 TLDR:
 - Use `-i STRING` to give a source like URL, with a valid id in it.
-- Use `-o STRING` to give a path to folder to save file(s).
+- Use `-o PATH` to give a path to folder to save file(s).
 - Use `--index STRING` to tell program which episode(s) to download.
+
+### Examples
+
+For example, you want to download video [`BV1GJ411x7h7`](https://www.bilibili.com/video/BV1GJ411x7h7/) and its `zh-cn` subtitle, and save these into current dir:
+
+Login if you want to access higher video quality (guest's max quality is 480P, common user's is 1080P), run:
+
+```bash
+$ bilitools-cli --login
+```
+
+Scan the QRCode with Bilibili APP on your phone and confirm.
+
+Secondly, run:
+
+```bash
+$ bilitools-cli -i "https://www.bilibili.com/video/BV1GJ411x7h7/" --subtitle-lang zh-cn -o ./
+```
+
+And program will do next things for you.
 
 ## Thanks a lot
 
@@ -87,5 +107,4 @@ TLDR:
 - Enhance ability to tolerate errors
 - Lower requirement of Python version
 - Try to bypass the risk-control mechanism of Bilibili
-- Add usage example in this file
 - *and a lot...*
