@@ -21,7 +21,7 @@ Not tested on Linux yet.
 
 ## Dependencies
 
-- Python 3.11 or above
+- Python 3.10 or above
 - FFmpeg
 
 ## Usage
