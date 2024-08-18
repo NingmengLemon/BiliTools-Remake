@@ -11,14 +11,13 @@ import hashlib
 from biliapis import new_apis, APIContainer, init_cache
 from biliapis.utils import remove_none
 from bilicore.parser import extract_ids
+from bilicore.utils import check_ffmpeg
 from . import printers, login
 from .core import CliCore
 
 
 class App(CliCore):
-    DEFAULT_DATADIR_PATH = os.path.join(
-        os.path.expanduser("~"), ".bilitools"
-    )
+    DEFAULT_DATADIR_PATH = os.path.join(os.path.expanduser("~"), ".bilitools")
     DEFAULT_DATA_FILENAME = "bilidata.json"
     DEFAULT_CACHE_FILENAME = "bilicache.db"
     VERSION = "1.0.0-alpha"
@@ -49,6 +48,10 @@ class App(CliCore):
                 os.path.join(self.DEFAULT_DATADIR_PATH, self.DEFAULT_CACHE_FILENAME),
                 args.cache_expire,
             )
+            
+        if not check_ffmpeg():
+            print("\nFFmpeg not found!!")
+            print("Program cannot function normally without FFmpeg, consider install it.\n")
 
     def _load_apis(self, data_path: str):
         data: Optional[dict] = self._load_data(data_path)

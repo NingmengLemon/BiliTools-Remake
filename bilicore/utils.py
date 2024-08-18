@@ -18,16 +18,16 @@ _FN_REPMAP = {
 }
 
 
-def call_ffmpeg(*args):
+def call_ffmpeg(*args, check=True):
     cmd = ["ffmpeg", "-loglevel", "quiet", "-nostdin", "-hide_banner"]
-    cmd += args
-    logging.debug("Executing: %s", cmd)
-    with subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    ) as subp:
-        return subp.wait()
+    cmd.extend(args)
+    logging.debug("executing: %s", cmd)
+    p = subprocess.run(cmd, capture_output=True, text=True, check=check)
+    return p.returncode
+
+
+def check_ffmpeg():
+    return call_ffmpeg("-h", check=False) == 0
 
 
 def merge_avfile(
