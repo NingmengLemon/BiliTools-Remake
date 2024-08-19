@@ -76,8 +76,8 @@ def refresh_cookies_flow(apis: APIContainer, refresh_token=None):
     """会在extra_data里塞一个refresh_token
 
     ~~但是还没有测试过~~"""
-    print("Attemping to refresh cookies...")
-    logging.info("Attempting to refresh cookies...")
+    print("attemping to refresh cookies...")
+    logging.info("attempting to refresh cookies...")
     if not refresh_token:
         refresh_token = apis.extra_data.get("bili_refresh_token")
     if not refresh_token:

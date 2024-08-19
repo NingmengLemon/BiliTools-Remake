@@ -52,8 +52,10 @@ def run_thread_with_tqdm(
             update_progress(pgrbar, thread)
             time.sleep(interval)
         update_progress(pgrbar, thread)
-    if (not thread.exceptions) and pos_assigner:
-        pos_assigner.put(pos)
+        if thread.exceptions:
+            pgrbar.leave = True
+        elif pos_assigner:
+            pos_assigner.put(pos)
     return thread
 
 
