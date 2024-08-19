@@ -107,4 +107,6 @@ And program will do next things for you.
 - Enhance ability to tolerate errors
 - Lower requirement of Python version
 - Try to bypass the risk-control mechanism of Bilibili
+- Optimize cache logic
+- Add more prompt text
 - *and a lot...*
