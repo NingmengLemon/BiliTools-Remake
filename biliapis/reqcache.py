@@ -95,7 +95,7 @@ class _RequestCache:
                 )
                 conn.commit()
         logging.debug("cache set: %s", hash_key)
-        if os.path.getsize(self.db_name) > 64 * 1024 * 1024:
+        if os.path.getsize(self.db_name) > 128 * 1024 * 1024:
             self.clear_expired()
 
     def clear(self):
