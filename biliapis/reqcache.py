@@ -3,10 +3,13 @@ import hashlib
 import time
 import threading
 import atexit
+import logging
+import os
 
 DEFAULT_DB_PATH = "./bilicache.db"
 
 __all__ = ["cache", "init"]
+
 
 class _RequestCache:
     # mainly powered by ChatGPT w
@@ -31,6 +34,7 @@ class _RequestCache:
             conn.commit()
         self.clear_expired()
         atexit.register(self.clear_expired)
+        logging.info("cache db init")
 
     def _get_connection(self):
         """为每个线程创建一个新的数据库连接"""
@@ -57,13 +61,23 @@ class _RequestCache:
                     response, timestamp = result
                     # 检查缓存是否过期
                     if time.time() - timestamp < self.expire_time:
+                        logging.debug("cache found, ok: %s", hash_key)
                         return response
                     else:
                         # 缓存过期，删除记录
                         cur.execute("DELETE FROM cache WHERE hash_key = ?", (hash_key,))
                         conn.commit()
+                        logging.debug("cache expired, deleted: %s", hash_key)
                         return None
                 return None
+
+    def vacuum(self):
+        with self._lock:
+            with self._get_connection() as conn:
+                cur = conn.cursor()
+                cur.execute("VACUUM")
+                conn.commit()
+        logging.debug("vacuumed cache")
 
     def set(self, request_params, response):
         """设置缓存"""
@@ -80,6 +94,9 @@ class _RequestCache:
                     (hash_key, response, timestamp),
                 )
                 conn.commit()
+        logging.debug("cache set: %s", hash_key)
+        if os.path.getsize(self.db_name) > 64 * 1024 * 1024:
+            self.clear_expired()
 
     def clear(self):
         """清理所有缓存"""
@@ -88,6 +105,8 @@ class _RequestCache:
                 cur = conn.cursor()
                 cur.execute("DELETE FROM cache")
                 conn.commit()
+        logging.debug("clear all cache")
+        self.vacuum()
 
     def clear_expired(self):
         """清理过期缓存"""
@@ -99,7 +118,11 @@ class _RequestCache:
                     "DELETE FROM cache WHERE ? - timestamp > ?",
                     (current_time, self.expire_time),
                 )
+                deleted_rows = cur.rowcount
                 conn.commit()
+                logging.debug("cleared expired cache: %sit", deleted_rows)
+        if deleted_rows > 0:
+            self.vacuum()
 
 
 cache: _RequestCache | None = None
