@@ -44,9 +44,7 @@ def run_thread_with_tqdm(
     unit="B",
 ):
     pos = pos_assigner.get() if pos_assigner else None
-    with tqdm(
-        unit=unit, unit_scale=True, unit_divisor=1024, position=pos, leave=False
-    ) as pgrbar:
+    with tqdm(unit=unit, unit_scale=True, position=pos, leave=False) as pgrbar:
         thread.start()
         while thread.is_alive():
             update_progress(pgrbar, thread)
@@ -119,20 +117,36 @@ def query_all_pages(
     curr: Callable[[_PageQueryResult], int],
     total: Callable[[_PageQueryResult], int],
     archives: Callable[[_PageQueryResult], list[Any]],
+    show_progress: bool = True,
 ):
-    data = func(page=1, page_size=page_size)
-    pages: list[Any] = archives(data)
-    while (page_num := curr(data)) < total(data):
-        data = func(page=page_num + 1, page_size=page_size)
-        pages.extend(archives(data))
+    with tqdm(leave=False, desc="Fetching pages", disable=not show_progress) as pgrbar:
+        data = func(page=1, page_size=page_size)
+        pages: list[Any] = archives(data)
+        while (page_num := curr(data)) < (page_total := total(data)):
+            pgrbar.n = page_num
+            pgrbar.total = page_total
+            data = func(page=page_num + 1, page_size=page_size)
+            pages.extend(archives(data))
+            pgrbar.refresh()
+        pgrbar.n = pgrbar.total = page_total
+        pgrbar.refresh()
     return data, pages
 
 
 def process_videolist_to_pagelist(
-    apis: APIContainer, videolist: list[dict[str, Any]], pindexs: set[int]
+    apis: APIContainer,
+    videolist: list[dict[str, Any]],
+    pindexs: set[int],
+    show_progress: bool = True,
 ) -> list[tuple[str, int]]:
     result = []
-    for i, video in enumerate(videolist):
+    for i, video in tqdm(
+        enumerate(videolist),
+        desc="Processing video list",
+        leave=False,
+        disable=not show_progress,
+        total=len(videolist),
+    ):
         if i + 1 in pindexs or not pindexs:
             bvid = video["bvid"]
             pagelist = apis.video.get_pagelist(bvid=bvid)

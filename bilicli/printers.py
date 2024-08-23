@@ -144,9 +144,6 @@ def print_series(series_meta: dict[str, Any], series_content: list[dict[str, Any
 Title       {name}
 series_id={series_id} / uid={mid}
 
-Desc
-{description}
-
 {total} video(s) in total""".format(
             **series_meta
         )

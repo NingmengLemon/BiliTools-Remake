@@ -3,7 +3,6 @@ from typing import Any, Callable, Literal
 import functools
 from threading import Lock
 import logging
-import pickle
 
 from requests import Session
 
@@ -98,9 +97,9 @@ def request_template(
                     "params": reqparams,
                     "handle": handle,
                 }
-                if (_ := reqcache.cache.get(cacheparams)) is not None:
+                if (result := reqcache.cache.get(cacheparams)) is not None:
                     logging.debug("Use cache: %s %s", mod.upper(), url)
-                    return pickle.loads(_)
+                    return result
             with self._session.request(mod, url, **reqparams) as resp:
                 resp.raise_for_status()
                 match handle:
@@ -111,7 +110,7 @@ def request_template(
                     case _:
                         result = resp.json()
             if allow_cache and self.allow_cache and reqcache.cache:
-                reqcache.cache.set(cacheparams, pickle.dumps(result))
+                reqcache.cache.set(cacheparams, result)
                 logging.debug("add cache: %s %s", mod.upper(), url)
             return result
 

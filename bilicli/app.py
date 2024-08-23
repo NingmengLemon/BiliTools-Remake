@@ -27,7 +27,7 @@ class App(CliCore):
         self._args = args
 
         if not os.path.isdir((_ := self.DEFAULT_DATADIR_PATH)):
-            os.mkdir(_)
+            os.makedirs(_, exist_ok=True)
 
         if _ := args.data_filepath:
             self._data_path = _

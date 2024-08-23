@@ -5,6 +5,7 @@ import threading
 import atexit
 import logging
 import os
+import pickle
 
 DEFAULT_DB_PATH = "./bilicache.db"
 
@@ -62,7 +63,7 @@ class _RequestCache:
                     # 检查缓存是否过期
                     if time.time() - timestamp < self.expire_time:
                         logging.debug("cache found, ok: %s", hash_key)
-                        return response
+                        return pickle.loads(response)
                     else:
                         # 缓存过期，删除记录
                         cur.execute("DELETE FROM cache WHERE hash_key = ?", (hash_key,))
@@ -91,7 +92,7 @@ class _RequestCache:
                     INSERT OR REPLACE INTO cache (hash_key, response, timestamp)
                     VALUES (?, ?, ?)
                 """,
-                    (hash_key, response, timestamp),
+                    (hash_key, pickle.dumps(response), timestamp),
                 )
                 conn.commit()
         logging.debug("cache set: %s", hash_key)
@@ -120,7 +121,7 @@ class _RequestCache:
                 )
                 deleted_rows = cur.rowcount
                 conn.commit()
-                logging.debug("cleared expired cache: %sit", deleted_rows)
+                logging.debug("cleared expired cache: %d items", deleted_rows)
         if deleted_rows > 0:
             self.vacuum()
 

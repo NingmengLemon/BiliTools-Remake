@@ -109,4 +109,5 @@ And program will do next things for you.
 - Try to bypass the risk-control mechanism of Bilibili
 - Optimize cache logic
 - Add more prompt text
+- Add confirm option
 - *and a lot...*
