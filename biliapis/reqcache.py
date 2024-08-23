@@ -18,6 +18,7 @@ class _RequestCache:
         self.db_name = db_name
         self.expire_time = expire_time  # 缓存过期时间（秒）
         self._lock = threading.Lock()
+        self._last_vacuum = 0.0
 
         # 确保数据库表已创建
         with self._get_connection() as conn:
@@ -74,10 +75,14 @@ class _RequestCache:
 
     def vacuum(self):
         with self._lock:
+            if time.time() - self._last_vacuum < 2 * 60:
+                logging.debug("skip vacuum due to too-small interval")
+                return
             with self._get_connection() as conn:
                 cur = conn.cursor()
                 cur.execute("VACUUM")
                 conn.commit()
+            self._last_vacuum = time.time()
         logging.debug("vacuumed cache")
 
     def set(self, request_params, response):
