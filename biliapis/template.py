@@ -4,7 +4,7 @@ import functools
 from threading import Lock
 import logging
 
-from requests import Session
+import requests
 
 from .wbi import CachedWbiManager
 from .constants import HEADERS as DEFAULT_HEADERS
@@ -24,7 +24,7 @@ class APITemplate:
     _DEFAULT_HEADERS = DEFAULT_HEADERS.copy()
 
     def __init__(
-        self, session: Session, wbimanager: CachedWbiManager, extra_data: dict
+        self, session: requests.Session, wbimanager: CachedWbiManager, extra_data: dict
     ) -> None:
         self.__session = session
         self.__wbimanager = wbimanager
@@ -63,7 +63,7 @@ def request_template(
     """
     对 APITemplate 的子类的方法做装饰，简化请求调用
 
-    被装饰的函数需要返回一个url和一个字典，作为 Session.request() 的除了method外的参数，
+    被装饰的函数需要返回一个url和一个字典，作为 requests.Session.request() 的除了method外的参数，
     headers参数有默认值可省略
 
     handle参数对请求得到的数据做处理
