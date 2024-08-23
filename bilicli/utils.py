@@ -63,7 +63,7 @@ def run_threads(threads: Sequence[WorkerThread], max_worker=4, unit="B"):
     with ThreadPoolExecutor(max_workers=max_worker) as executor:
         futures = [
             executor.submit(run_thread_with_tqdm, thread, assigner, unit=unit)
-            for i, thread in enumerate(threads)
+            for thread in threads
         ]
         for future in tqdm(
             as_completed(futures),
@@ -140,15 +140,17 @@ def process_videolist_to_pagelist(
     show_progress: bool = True,
 ) -> list[tuple[str, int]]:
     result = []
-    for i, video in tqdm(
-        enumerate(videolist),
+    with tqdm(
         desc="Processing video list",
         leave=False,
         disable=not show_progress,
         total=len(videolist),
-    ):
-        if i + 1 in pindexs or not pindexs:
-            bvid = video["bvid"]
-            pagelist = apis.video.get_pagelist(bvid=bvid)
-            result.extend([(bvid, page["cid"]) for page in pagelist])
+    ) as pgrbar:
+        for i, video in enumerate(videolist):
+            if i + 1 in pindexs or not pindexs:
+                bvid = video["bvid"]
+                pagelist = apis.video.get_pagelist(bvid=bvid)
+                result.extend([(bvid, page["cid"]) for page in pagelist])
+            pgrbar.n = i + 1
+            pgrbar.refresh()
     return result

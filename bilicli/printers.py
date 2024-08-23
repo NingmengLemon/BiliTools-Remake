@@ -160,9 +160,6 @@ Title       {name}
 season_id={season_id} / uid={mid}
 Cover       {cover}
 
-Desc
-{description}
-
 {total} video(s) in total""".format(**season_meta)
     )
     for i, video in enumerate(archives):
