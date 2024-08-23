@@ -38,7 +38,7 @@ class LoginAPIs(template.APITemplate):
         "https://passport.bilibili.com/x/passport-login/web/cookie/info"
     )
     _API_REFRESH_CSRF = "https://www.bilibili.com/correspond/1/"
-    _API_REFRESH_COOKEIS = (
+    _API_REFRESH_COOKIES = (
         "https://passport.bilibili.com/x/passport-login/web/cookie/refresh"
     )
     _API_REFRESH_CONFIRM = (
@@ -100,7 +100,7 @@ class LoginAPIs(template.APITemplate):
     @template.request_template("post")
     @template.withcsrf
     def refresh_cookies(self, refresh_token, refresh_csrf, csrf=None):
-        return self._API_REFRESH_COOKEIS, {
+        return self._API_REFRESH_COOKIES, {
             "params": {
                 "refresh_token": refresh_token,
                 "source": "main_web",
