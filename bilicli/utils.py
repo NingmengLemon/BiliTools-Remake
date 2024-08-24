@@ -156,7 +156,9 @@ def process_videolist_to_pagelist(
     return result
 
 
-def ask_confirm(yes=False, prompt="Continue? (Y/N)"):
+def ask_confirm(yes=False, prompt="Continue? (Y/N): "):
     if not yes:
-        return input(prompt).strip().lower() == "y"
+        while (c := input(prompt).strip().lower()) not in ("y", "n"):
+            print("unexpected input")
+        return c == "y"
     return True
