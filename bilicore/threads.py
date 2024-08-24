@@ -327,7 +327,7 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
     ) -> dict[str, str]:
         title = self._correct_title or video_detail["title"]
         ptitle = self._correct_ptitle or video_detail["pages"][real_pindex]["part"]
-        pindex = self._correct_pindex or real_pindex
+        pindex = self._correct_pindex or (real_pindex + 1)
         ptitle = f"P{pindex}" + (f" - {ptitle}" if ptitle != title else "")
         metadata = {
             "title": title,
