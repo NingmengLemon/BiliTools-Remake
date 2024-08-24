@@ -110,5 +110,4 @@ And program will do next things for you.
 - Optimize cache logic
 - Add more prompt text
 - Add confirm option
-- Optimize session loader
 - *and a lot...*

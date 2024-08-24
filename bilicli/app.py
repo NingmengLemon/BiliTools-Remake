@@ -1,19 +1,15 @@
 import argparse
 import logging
-import pickle
 import os
 import atexit
 from typing import Optional
-import json
-import base64
-import hashlib
 
-from biliapis import new_apis, APIContainer, init_cache
+from biliapis import APIContainer, init_cache
 from biliapis.utils import remove_none
 import bilicore
 from bilicore.parser import extract_ids
 from bilicore.utils import check_ffmpeg
-from . import printers, login
+from . import printers, login, utils, svld
 from .core import CliCore
 
 
@@ -30,13 +26,13 @@ class App(CliCore):
             os.makedirs(_, exist_ok=True)
 
         if _ := args.data_filepath:
-            self._data_path = _
+            self._data_filepath = _
         else:
-            self._data_path = os.path.join(
+            self._data_filepath = os.path.join(
                 self.DEFAULT_DATADIR_PATH, self.DEFAULT_DATA_FILENAME
             )
 
-        super().__init__(self._load_apis(self._data_path))
+        super().__init__(self._load_all(self._data_filepath))
         atexit.register(self._save_all)
 
         if args.version:
@@ -56,60 +52,20 @@ class App(CliCore):
             print(
                 "Program cannot function normally without FFmpeg, consider install it.\n"
             )
+            utils.ask_confirm(args.yes)
 
-    def _load_apis(self, data_path: str):
-        data: Optional[dict] = self._load_data(data_path)
-        if not data:
-            return new_apis()
-        session: Optional[dict] = data.pop("__session", None)
-        if not session:
-            logging.warning("session data not found, create new one")
-            return new_apis()
-        session_b64 = session["data"]
-        session_pickle = base64.b64decode(session_b64)
-        if (_ := hashlib.sha256(session_pickle).hexdigest()) != session["check"]:
-            logging.error("session validation failed: %s != %s", _, session["check"])
-            return new_apis()
-        session_obj = pickle.loads(session_pickle)
-        logging.info("session loaded.")
-        return new_apis(session=session_obj, extra_data=data)
+    def _load_all(self, data_path: str) -> APIContainer:
+        return svld.load_data(data_path)
 
     def _save_all(self):
-        self._save_data(self._apis, self._data_path)
-
-    @staticmethod
-    def _load_data(data_path: str):
-        if not os.path.isfile(data_path):
-            logging.info("data file not found, create new one")
-            return None
-        try:
-            with open(data_path, "r", encoding="utf-8") as fp:
-                data = json.load(fp)
-            logging.info("data loaded: %s", data_path)
-            logging.debug("data content: %s", data)
-            return data
-        except Exception as e:
-            logging.warning("unable to load data: %s", e, exc_info=True)
-            return None
-
-    @staticmethod
-    def _save_data(apis: APIContainer, path: str):
-        data = apis.extra_data.copy()
-        session_pickle = pickle.dumps(apis.session)
-        data["__session"] = {
-            "data": base64.b64encode(session_pickle).decode(),
-            "check": hashlib.sha256(session_pickle).hexdigest(),
-        }
-        with open(path, "w+", encoding="utf-8") as fp:
-            json.dump(data, fp)
-            logging.info("data saved: %s", path)
+        svld.save_data(self._apis, self._data_filepath)
 
     def run(self):
         self._main_process(self._args)
 
     def _main_process(self, args: argparse.Namespace):
         apis = self._apis
-        
+
         if args.version:
             return
 
