@@ -87,7 +87,7 @@ def load_data(data_path: str) -> APIContainer:
         try:
             return pickle.loads(session_pickle), data
         except Exception as e:
-            logging.error("error when unpickling session: %s", e)
+            logging.error("error when deserializing session: %s", e)
             return
     logging.error("session validation failed")
     return
