@@ -160,8 +160,29 @@ Title       {name}
 season_id={season_id} / uid={mid}
 Cover       {cover}
 
-{total} video(s) in total""".format(**season_meta)
+{total} video(s) in total""".format(
+            **season_meta
+        )
     )
     for i, video in enumerate(archives):
         print("P{i:<4d} {bvid} {title}".format(**video, i=i + 1))
     print()
+
+
+def print_index_option(index_s: Optional[str]):
+    print("Selected episode(s): ", end="")
+    if not index_s:
+        print("ALL (except extra sections)")
+        return
+    parts = index_s.split(",")
+    fr_flag = False
+    for part in parts:
+        if fr_flag:
+            print(", ", end="")
+        if "-" in part:
+            start, end = map(int, part.split("-"))
+            print(f"[{start}, {end}]", end="")
+        else:
+            print(f"{int(part)}", end="")
+        fr_flag = True
+    print("\nNote: out-of-range index(s) will be ignored")

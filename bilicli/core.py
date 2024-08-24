@@ -48,6 +48,7 @@ class CliCore:
         pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
         if not savedir:
             return
+        printers.print_index_option(options.get("index"))
         if not utils.ask_confirm():
             return
         print("\nstarting download...\n")
@@ -82,6 +83,7 @@ class CliCore:
         printers.print_media_detail(media_detail)
         if not savedir:
             return
+        printers.print_index_option(options.get("index"))
         if not utils.ask_confirm():
             return
         print("\nstarting download...\n")
@@ -129,6 +131,7 @@ class CliCore:
         printers.print_manga_info(manga_info)
         if not savedir:
             return
+        printers.print_index_option(options.get("index"))
         if not utils.ask_confirm():
             return
         pindexs = utils.parse_index_option(options.get("index"))
@@ -158,6 +161,7 @@ class CliCore:
         printers.print_audio_info(audio_info)
         if not savedir:
             return
+        printers.print_index_option(options.get("index"))
         if not utils.ask_confirm():
             return
         print("\nstarting download...\n")
@@ -187,6 +191,7 @@ class CliCore:
         printers.print_audio_playmenu_info(info, songlist)
         if not savedir:
             return
+        printers.print_index_option(options.get("index"))
         if not utils.ask_confirm():
             return
         print("\nstarting download...\n")
@@ -231,6 +236,7 @@ class CliCore:
         printers.print_series(series, videos)
         if not savedir:
             return
+        printers.print_index_option(options.get("index"))
         if not utils.ask_confirm():
             return
         pindexs = utils.parse_index_option(options.get("index"))
@@ -275,6 +281,7 @@ class CliCore:
         printers.print_season(season, videos)
         if not savedir:
             return
+        printers.print_index_option(options.get("index"))
         if not utils.ask_confirm():
             return
         pindexs = utils.parse_index_option(options.get("index"))
