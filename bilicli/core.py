@@ -48,6 +48,8 @@ class CliCore:
         pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
         if not savedir:
             return
+        if not utils.ask_confirm():
+            return
         print("\nstarting download...\n")
         pages = [
             page
@@ -55,6 +57,7 @@ class CliCore:
             if i + 1 in pindexs or not pindexs
         ]
         if not pages:
+            print("No episode to handle")
             return
         return utils.run_threads(
             [
@@ -79,6 +82,8 @@ class CliCore:
         printers.print_media_detail(media_detail)
         if not savedir:
             return
+        if not utils.ask_confirm():
+            return
         print("\nstarting download...\n")
         pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
         # 超出正片分P索引的作为番外处理，不指定索引则只处理正片
@@ -95,6 +100,7 @@ class CliCore:
                         eps_to_handle.append((reali, ep))
                 offset += len(eps)
         if not eps_to_handle:
+            print("No episode to handle")
             return
         return utils.run_threads(
             [
@@ -123,6 +129,8 @@ class CliCore:
         printers.print_manga_info(manga_info)
         if not savedir:
             return
+        if not utils.ask_confirm():
+            return
         pindexs = utils.parse_index_option(options.get("index"))
         print("\nstarting download...\n")
         eps_to_handle = [
@@ -131,6 +139,7 @@ class CliCore:
             if i + 1 in pindexs or not pindexs
         ]
         if not eps_to_handle:
+            print("No episode to handle")
             return
         return utils.run_threads(
             [
@@ -149,6 +158,8 @@ class CliCore:
         printers.print_audio_info(audio_info)
         if not savedir:
             return
+        if not utils.ask_confirm():
+            return
         print("\nstarting download...\n")
         return utils.run_threads(
             [
@@ -164,20 +175,19 @@ class CliCore:
 
     @check_exceptions
     def _audio_playmenu_process(self, savedir: Optional[str], *, amid: int, **options):
-        page_size = 50  # max=100
         info = self._apis.audio.get_playmenu_info(amid=amid)
-        content = self._apis.audio.get_playmenu_content(
-            amid=amid, page=1, page_size=page_size
+        _, songlist = utils.query_all_pages(
+            functools.partial(self._apis.audio.get_playmenu_content, amid=amid),
+            page_size=100,
+            curr=lambda x: x["curPage"],
+            total=lambda x: x["pageCount"],
+            archives=lambda x: x["data"],
         )
-        songlist: list[dict[str, Any]] = content["data"]
-        while content["curPage"] < content["pageCount"]:
-            content = self._apis.audio.get_playmenu_content(
-                amid=amid, page=content["curPage"] + 1, page_size=page_size
-            )
-            songlist += content["data"]
 
         printers.print_audio_playmenu_info(info, songlist)
         if not savedir:
+            return
+        if not utils.ask_confirm():
             return
         print("\nstarting download...\n")
         pindexs = utils.parse_index_option(options.get("index"))
@@ -221,12 +231,14 @@ class CliCore:
         printers.print_series(series, videos)
         if not savedir:
             return
+        if not utils.ask_confirm():
+            return
         pindexs = utils.parse_index_option(options.get("index"))
-        print("preparing...")
         videos_to_handle = videos_to_handle = utils.process_videolist_to_pagelist(
             self._apis, videos, pindexs
         )
         if not videos_to_handle:
+            print("No episode to handle")
             return
         return utils.run_threads(
             [
@@ -263,12 +275,14 @@ class CliCore:
         printers.print_season(season, videos)
         if not savedir:
             return
+        if not utils.ask_confirm():
+            return
         pindexs = utils.parse_index_option(options.get("index"))
-        print("preparing...")
         videos_to_handle = utils.process_videolist_to_pagelist(
             self._apis, videos, pindexs
         )
         if not videos_to_handle:
+            print("No episode to handle")
             return
         return utils.run_threads(
             [

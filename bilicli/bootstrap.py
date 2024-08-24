@@ -54,6 +54,10 @@ def parse_arguments():
         help="Specify cache expire time, default to 300s",
     )
 
+    parser.add_argument(
+        "-y", "--yes", action="store_true", help="Just do it without confirmation"
+    )
+
     parser.add_argument("-i", "--input", type=str, help="Specify media source")
 
     parser.add_argument(

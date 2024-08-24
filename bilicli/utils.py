@@ -154,3 +154,9 @@ def process_videolist_to_pagelist(
             pgrbar.n = i + 1
             pgrbar.refresh()
     return result
+
+
+def ask_confirm(yes=False, prompt="Continue? (Y/N)"):
+    if not yes:
+        return input(prompt).strip().lower() == "y"
+    return True
