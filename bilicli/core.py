@@ -49,7 +49,7 @@ class CliCore:
         if not savedir:
             return
         printers.print_index_option(options.get("index"))
-        if not utils.ask_confirm():
+        if not utils.ask_confirm(yes=options.get("yes")):
             return
         print("\nstarting download...\n")
         pages = [
@@ -84,7 +84,7 @@ class CliCore:
         if not savedir:
             return
         printers.print_index_option(options.get("index"))
-        if not utils.ask_confirm():
+        if not utils.ask_confirm(yes=options.get("yes")):
             return
         print("\nstarting download...\n")
         pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
@@ -132,7 +132,7 @@ class CliCore:
         if not savedir:
             return
         printers.print_index_option(options.get("index"))
-        if not utils.ask_confirm():
+        if not utils.ask_confirm(yes=options.get("yes")):
             return
         pindexs = utils.parse_index_option(options.get("index"))
         print("\nstarting download...\n")
@@ -162,7 +162,7 @@ class CliCore:
         if not savedir:
             return
         printers.print_index_option(options.get("index"))
-        if not utils.ask_confirm():
+        if not utils.ask_confirm(yes=options.get("yes")):
             return
         print("\nstarting download...\n")
         return utils.run_threads(
@@ -192,7 +192,7 @@ class CliCore:
         if not savedir:
             return
         printers.print_index_option(options.get("index"))
-        if not utils.ask_confirm():
+        if not utils.ask_confirm(yes=options.get("yes")):
             return
         print("\nstarting download...\n")
         pindexs = utils.parse_index_option(options.get("index"))
@@ -237,7 +237,7 @@ class CliCore:
         if not savedir:
             return
         printers.print_index_option(options.get("index"))
-        if not utils.ask_confirm():
+        if not utils.ask_confirm(yes=options.get("yes")):
             return
         pindexs = utils.parse_index_option(options.get("index"))
         videos_to_handle = videos_to_handle = utils.process_videolist_to_pagelist(
@@ -282,7 +282,7 @@ class CliCore:
         if not savedir:
             return
         printers.print_index_option(options.get("index"))
-        if not utils.ask_confirm():
+        if not utils.ask_confirm(yes=options.get("yes")):
             return
         pindexs = utils.parse_index_option(options.get("index"))
         videos_to_handle = utils.process_videolist_to_pagelist(
