@@ -9,18 +9,18 @@ from biliapis import bilicodes
 
 ID_PATTERNS = (
     (r"(?<![A-Za-z])(BV[a-zA-Z0-9]{10})", "bvid", str),
-    (r"(?<![A-Za-z])av([0-9]+)", "avid", int),
-    (r"(?<![A-Za-z])au([0-9]+)", "auid", int),
-    (r"(?<![A-Za-z])cv([0-9]+)", "cvid", int),
-    (r"(?<![A-Za-z])mc([0-9]+)", "mcid", int),
-    (r"(?<![A-Za-z])md([0-9]+)", "mdid", int),
-    (r"(?<![A-Za-z])ss([0-9]+)", "ssid", int),
-    (r"(?<![A-Za-z])ep([0-9]+)", "epid", int),
-    (r"(?<![A-Za-z])uid([0-9]+)", "uid", int),
-    (r"(?<![A-Za-z])am([0-9]+)", "amid", int),
-    (r"(?<=collectiondetail).*?(?<![A-Za-z])sid=([0-9]+)", "season_id", int),
-    (r"(?<=seriesdetail).*?(?<![A-Za-z])sid=([0-9]+)", "series_id", int),
-    (r"(?<=space\.bilibili\.com/)([0-9]+)", "uid", int),
+    (r"(?<![A-Za-z])av(\d+)", "avid", int),
+    (r"(?<![A-Za-z])au(\d+)", "auid", int),
+    (r"(?<![A-Za-z])cv(\d+)", "cvid", int),
+    (r"(?<![A-Za-z])mc(\d+)", "mcid", int),
+    (r"(?<![A-Za-z])md(\d+)", "mdid", int),
+    (r"(?<![A-Za-z])ss(\d+)", "ssid", int),
+    (r"(?<![A-Za-z])ep(\d+)", "epid", int),
+    (r"(?<![A-Za-z])uid(\d+)", "uid", int),
+    (r"(?<![A-Za-z])am(\d+)", "amid", int),
+    (r"(?<=collectiondetail).*?(?<![A-Za-z])sid=(\d+)", "season_id", int),
+    (r"(?<=seriesdetail).*?(?<![A-Za-z])sid=(\d+)", "series_id", int),
+    (r"(?<=space\.bilibili\.com/)(\d+)", "uid", int),
 )
 
 
