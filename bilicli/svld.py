@@ -4,37 +4,18 @@ import json
 import logging
 import hashlib
 import os
-import hmac
 import functools
-import platform
-import uuid
 
 import requests
 
 from biliapis import APIContainer, new_apis
 
 
-def get_fingerprint():
-    return hashlib.sha256(
-        f"""
-{platform.machine()}
-{platform.processor()}
-{platform.architecture()}
-{platform.system()}
-{uuid.getnode()}
-""".encode()
-        + "114514".encode()
-    ).digest()
-
-
-KEY = get_fingerprint()
-
-
 def save_data(apis: APIContainer, path: str):
     data = apis.extra_data.copy()
     session_pickle = pickle.dumps(apis.session)
     data["__session"] = base64.b64encode(
-        hmac.new(KEY, session_pickle, hashlib.sha256).digest() + session_pickle
+        hashlib.sha256(session_pickle).digest() + session_pickle
     ).decode("utf-8")
     with open(path, "w+", encoding="utf-8") as fp:
         json.dump(data, fp)
@@ -80,10 +61,7 @@ def load_data(data_path: str) -> APIContainer:
     session = base64.b64decode(session_b64)
     session_check = session[:32]
     session_pickle = session[32:]
-    if hmac.compare_digest(
-        session_check,
-        hmac.new(KEY, session_pickle, hashlib.sha256).digest(),
-    ):
+    if hashlib.sha256(session_pickle).digest() == session_check:
         try:
             return pickle.loads(session_pickle), data
         except Exception as e:
