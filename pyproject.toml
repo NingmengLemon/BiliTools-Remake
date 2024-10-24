@@ -1,0 +1,34 @@
+[project]
+name = "BiliTools-Remake"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "NingmengLemon", email = "60469383+NingmengLemon@users.noreply.github.com"},
+]
+dependencies = [
+    "pycryptodome>=3.21.0",
+    "tqdm>=4.66.5",
+    "requests>=2.32.3",
+    "qrcode>=8.0",
+]
+requires-python = "<3.13,>=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[project.optional-dependencies]
+dist = [
+    "pyinstaller>=6.11.0",
+    "nuitka>=2.4.11",
+]
+[tool.pdm]
+distribution = false
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "ipykernel>=6.29.5",
+    "types-qrcode>=8.0.0.20241004",
+    "types-requests>=2.32.0.20241016",
+    "types-tqdm>=4.66.0.20240417",
+    "pytest>=8.3.3",
+]

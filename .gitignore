@@ -166,3 +166,5 @@ samples/
 
 .VSCodeCounter/
 bilisession.pkl
+bilitools-cli.dist/
+*.exe
