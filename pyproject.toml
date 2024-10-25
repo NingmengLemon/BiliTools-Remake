@@ -1,7 +1,7 @@
 [project]
 name = "BiliTools-Remake"
-version = "0.1.0"
-description = "Default template for PDM package"
+version = "1.0.0"
+description = "A simple media downloader for Bilibili"
 authors = [
     {name = "NingmengLemon", email = "60469383+NingmengLemon@users.noreply.github.com"},
 ]

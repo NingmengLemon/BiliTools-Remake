@@ -17,7 +17,7 @@ class App(CliCore):
     DEFAULT_DATADIR_PATH = os.path.join(os.path.expanduser("~"), ".bilitools")
     DEFAULT_DATA_FILENAME = "bilidata.json"
     DEFAULT_CACHE_FILENAME = "bilicache.db"
-    VERSION = "1.0.0-beta"
+    VERSION = "1.0.0"
 
     def __init__(self, args: argparse.Namespace) -> None:
         self._args = args
