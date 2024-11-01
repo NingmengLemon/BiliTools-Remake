@@ -477,7 +477,7 @@ class SingleMangaChapterThread(threading.Thread, ThreadUtilsMixin, ThreadProgres
         index = self._apis.manga.get_image_index(self._epid)
         paths = [i["path"] for i in index["images"]]
         tokens = self._apis.manga.get_image_token(*paths)
-        urls = [i["url"] + "?token=" + i["token"] for i in tokens]
+        urls = [i["complete_url"] for i in tokens]
         self._report_progress(0, len(urls), pgr_text="downloading")
         with ThreadPoolExecutor(max_workers=8) as executor:
             futures = [

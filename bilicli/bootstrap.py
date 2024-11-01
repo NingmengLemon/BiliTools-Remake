@@ -132,7 +132,7 @@ def parse_arguments():
         "-o",
         "--output",
         type=str,
-        help="Specify path to a folder to store output file. Leaving it blank is equal to use --dry-run",
+        help="Specify path to a folder to store output file. Leaving it blank is equal to using --dry-run",
     )
 
     return parser.parse_args()
