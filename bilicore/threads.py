@@ -477,7 +477,13 @@ class SingleMangaChapterThread(threading.Thread, ThreadUtilsMixin, ThreadProgres
         index = self._apis.manga.get_image_index(self._epid)
         paths = [i["path"] for i in index["images"]]
         tokens = self._apis.manga.get_image_token(*paths)
-        urls = [i["complete_url"] for i in tokens]
+        urls = [
+            i["url"] + "?token=" + i["token"] for i in tokens if i["token"] and i["url"]
+        ]
+        if not urls:
+            self._report_progress(0, 0, pgr_text="hit encrypt, terminated")
+            self._report_exception(RuntimeError("data encrypted"))
+            return
         self._report_progress(0, len(urls), pgr_text="downloading")
         with ThreadPoolExecutor(max_workers=8) as executor:
             futures = [
