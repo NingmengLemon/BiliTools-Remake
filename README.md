@@ -13,7 +13,7 @@ Not tested on Linux yet.
 - Download common videos (or only their audio tracks)
 - Download bangumi and movies
 - Download songs
-- Download comics
+- ~~Download comics~~
 - Download video collections (called season or series) created by users
 - Login by scanning QRCode
 
