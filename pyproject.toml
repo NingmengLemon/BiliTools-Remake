@@ -8,12 +8,15 @@ authors = [
 dependencies = [
     "pycryptodome>=3.21.0",
     "tqdm>=4.66.5",
-    "requests>=2.32.3",
     "qrcode>=8.0",
+    "aiosqlite>=0.21.0",
+    "sqlmodel>=0.0.22",
+    "sqlalchemy>=2.0.38",
+    "aiohttp>=3.11.13",
 ]
-requires-python = "<3.13,>=3.11"
+requires-python = ">=3.12,<3.13"
 readme = "README.md"
-license = {text = "MIT"}
+license = {text = "AGPL3"}
 
 
 [project.optional-dependencies]
@@ -24,11 +27,12 @@ dist = [
 [tool.pdm]
 distribution = false
 
-[tool.pdm.dev-dependencies]
+
+[dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
     "types-qrcode>=8.0.0.20241004",
-    "types-requests>=2.32.0.20241016",
     "types-tqdm>=4.66.0.20240417",
     "pytest>=8.3.3",
+    "pytest-asyncio>=0.25.3",
 ]
