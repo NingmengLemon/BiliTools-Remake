@@ -8,7 +8,7 @@ Not tested on Linux yet.
 
 *Still under development...*
 
-## Now it can do...
+## Now it can do
 
 - Download common videos (or only their audio tracks)
 - Download bangumi and movies
@@ -25,6 +25,12 @@ Not tested on Linux yet.
 - FFmpeg
 
 ## Usage
+
+TLDR:
+
+- Use `-i STRING` to give a source like URL, with a valid id in it.
+- Use `-o PATH` to give a path to folder to save file(s).
+- Use `--index STRING` to tell program which episode(s) to download.
 
 ```
 > bilitools-cli -h
@@ -72,11 +78,6 @@ options:
                         Specify path to a folder to store output file. Leaving it blank is equal to use --dry-run
 ```
 
-TLDR:
-- Use `-i STRING` to give a source like URL, with a valid id in it.
-- Use `-o PATH` to give a path to folder to save file(s).
-- Use `--index STRING` to tell program which episode(s) to download.
-
 ### Examples
 
 For example, you want to download video [`BV1GJ411x7h7`](https://www.bilibili.com/video/BV1GJ411x7h7/) and its `zh-cn` subtitle, and save these into current dir:
@@ -84,7 +85,7 @@ For example, you want to download video [`BV1GJ411x7h7`](https://www.bilibili.co
 Login if you want to access higher video quality (guest's max quality is 480P, common user's is 1080P), run:
 
 ```bash
-$ bilitools-cli --login
+bilitools-cli --login
 ```
 
 Scan the QRCode with Bilibili APP on your phone and confirm.
@@ -92,7 +93,7 @@ Scan the QRCode with Bilibili APP on your phone and confirm.
 Secondly, run:
 
 ```bash
-$ bilitools-cli -i "https://www.bilibili.com/video/BV1GJ411x7h7/" --subtitle-lang zh-cn -o ./
+bilitools-cli -i "https://www.bilibili.com/video/BV1GJ411x7h7/" --subtitle-lang zh-cn -o ./
 ```
 
 And program will do next things for you.
@@ -102,7 +103,7 @@ And program will do next things for you.
 - [bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect): Where the dream begins.
 - [FFmpeg](https://ffmpeg.org/): A super-big-cup media processor.
 
-## TODO:
+## TODO
 
 - Enhance ability to tolerate errors
 - Lower requirement of Python version
@@ -110,4 +111,7 @@ And program will do next things for you.
 - Optimize cache logic
 - Add more prompt text
 - Add confirm option
+- Fix failure to download some old videos that can only be downloaded with mp4 format instead of DASH (see also [SocialSisterYi/bilibili-API-collect#88](https://github.com/SocialSisterYi/bilibili-API-collect/issues/888#event-17327233308))
 - *and a lot...*
+
+*Will be rewritten in async, maybe*
