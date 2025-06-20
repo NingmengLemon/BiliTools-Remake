@@ -45,6 +45,7 @@
     - --yes / -y
   - login
   - logout
+  - sb
 - bilitools-gui
 - config
   - confirm_before_act

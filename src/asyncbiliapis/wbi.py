@@ -1,17 +1,17 @@
 """
-Original from 
+Original from
 
-https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/wbi.md#python 
+https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/wbi.md#python
 
 , Reorganized.
 """
 
+import time
+import urllib.parse
 from functools import reduce
 from hashlib import md5
-import urllib.parse
-import time
-from typing import Optional
 from threading import Lock
+from typing import Optional
 
 __all__ = ["CachedWbiManager", "sign", "get_wbi_keys"]
 
@@ -28,6 +28,7 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
     "Referer": "https://www.bilibili.com/",
 }
+
 
 class CachedWbiManager:
     def __init__(self, session: Optional[requests.Session] = None) -> None:
