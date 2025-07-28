@@ -17,7 +17,7 @@ Not tested on Linux yet.
 - Download video collections (called season or series) created by users
 - Login by scanning QRCode
 
-**Notice:** This program cannot help you to unlock media on Bilibili, plz check your permission before you act. Also there exists risks (eg. get account banned) because of uncomplete implemention solving Bilibili risk control, you are responsible for the consequences of using this program. **You have been warned.**
+**Notice:** This program cannot help you to unlock media on Bilibili, plz check your permission before you act. Also there exists risks (eg. get account banned) because of incomplete implemention solving Bilibili risk control, you are responsible for the consequences of using this program. **You have been warned.**
 
 ## Dependencies
 
