@@ -29,13 +29,13 @@ Not tested on Linux yet.
 Use `pipx`:
 
 ```bash
-pipx install https://github.com/NingmengLemon/BiliTools-Remake.git
+pipx install git+https://github.com/NingmengLemon/BiliTools-Remake.git@main
 ```
 
 or `uv tool`:
 
 ```bash
-uv tool install https://github.com/NingmengLemon/BiliTools-Remake.git
+uv tool install git+https://github.com/NingmengLemon/BiliTools-Remake.git@main
 ```
 
 ## Usage
