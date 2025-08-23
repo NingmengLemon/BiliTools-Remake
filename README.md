@@ -24,6 +24,20 @@ Not tested on Linux yet.
 - Python 3.10 or above
 - FFmpeg
 
+## Installation
+
+Use `pipx`:
+
+```bash
+pipx install https://github.com/NingmengLemon/BiliTools-Remake.git
+```
+
+or `uv tool`:
+
+```bash
+uv tool install https://github.com/NingmengLemon/BiliTools-Remake.git
+```
+
 ## Usage
 
 TLDR:

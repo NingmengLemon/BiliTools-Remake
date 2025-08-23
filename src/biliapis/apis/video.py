@@ -1,10 +1,8 @@
-from typing import Any, Generator, Callable, Literal, Optional
 import functools
 import logging
+from typing import Any, Callable, Generator, Literal, Optional
 
-from .. import template
-from .. import checker
-from .. import utils
+from .. import checker, template, utils
 from ..error import BiliError
 
 
@@ -16,7 +14,7 @@ class VideoAPIs(template.APITemplate):
         ("https://api.bilibili.com/pgc/player/web/playurl", "result"),
         ("https://api.bilibili.com/x/player/playurl", "result"),
     )
-    _API_PLAYER = "https://api.bilibili.com/x/player/v2"
+    _API_PLAYER_WBI = "https://api.bilibili.com/x/player/wbi/v2"
     _API_PAGELIST = "https://api.bilibili.com/x/player/pagelist"
     # 用户创建的视频列表分成 Season 和 Series 两种
     _API_SEASON_CONTENT = (  # 获取单个season的内容
@@ -110,7 +108,7 @@ class VideoAPIs(template.APITemplate):
                 }
             )
         )
-        return self._API_PLAYER, {"params": params}
+        return self._API_PLAYER_WBI, {"params": self._wbimanager.sign(params)}
 
     @template.request_template(handle="str")
     def get_danmaku(self, cid):

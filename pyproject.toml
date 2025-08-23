@@ -1,9 +1,9 @@
 [project]
 name = "BiliTools-Remake"
-version = "1.0.0"
+version = "1.0.1"
 description = "A simple media downloader for Bilibili"
 authors = [
-    {name = "NingmengLemon", email = "60469383+NingmengLemon@users.noreply.github.com"},
+    { name = "NingmengLemon", email = "60469383+NingmengLemon@users.noreply.github.com" },
 ]
 dependencies = [
     "pycryptodome>=3.21.0",
@@ -13,18 +13,18 @@ dependencies = [
 ]
 requires-python = "<3.13,>=3.11"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 
+[project.scripts]
+bilitools-cli = "bilicli:boot"
+
+[tool.uv]
+package = true
 
 [project.optional-dependencies]
-dist = [
-    "pyinstaller>=6.11.0",
-    "nuitka>=2.4.11",
-]
-[tool.pdm]
-distribution = false
+dist = ["pyinstaller>=6.11.0"]
 
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
     "types-qrcode>=8.0.0.20241004",
@@ -32,3 +32,14 @@ dev = [
     "types-tqdm>=4.66.0.20240417",
     "pytest>=8.3.3",
 ]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.build]
+package-dir = "src"
+includes = ["src"]
+
+[tool.pdm.scripts]
+build = "pyinstaller --noconfirm --onefile src/bilitools-cli.py"

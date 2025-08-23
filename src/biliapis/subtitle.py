@@ -98,7 +98,7 @@ def bcc2lrc(data: dict[str, Any]) -> str:
 
 
 class BiliClosedCaption:
-    def __init__(self, bccdata: dict | str | bytes | bytearray) -> None:
+    def __init__(self, bccdata: dict[str, Any] | str | bytes | bytearray) -> None:
         if isinstance(bccdata, (str, bytes, bytearray)):
             self._data: dict[str, Any] = json.loads(bccdata)
         else:
