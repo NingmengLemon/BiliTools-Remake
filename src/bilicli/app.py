@@ -1,15 +1,16 @@
 import argparse
+import atexit
 import logging
 import os
-import atexit
 from typing import Optional
 
+import bilicore
 from biliapis import APIContainer, init_cache
 from biliapis.utils import remove_none
-import bilicore
 from bilicore.parser import extract_ids
 from bilicore.utils import check_ffmpeg
-from . import printers, login, utils, svld
+
+from . import login, printers, svld, utils
 from .core import CliCore
 
 
@@ -17,7 +18,7 @@ class App(CliCore):
     DEFAULT_DATADIR_PATH = os.path.join(os.path.expanduser("~"), ".bilitools")
     DEFAULT_DATA_FILENAME = "bilidata.json"
     DEFAULT_CACHE_FILENAME = "bilicache.db"
-    VERSION = "1.0.0"
+    VERSION = "1.0.1"
 
     def __init__(self, args: argparse.Namespace) -> None:
         self._args = args
