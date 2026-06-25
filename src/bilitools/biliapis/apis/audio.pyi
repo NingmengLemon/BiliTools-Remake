@@ -1,5 +1,6 @@
 from typing import Any, Literal
-from biliapis.template import APITemplate
+
+from ..template import APITemplate
 
 class AudioAPIs(APITemplate):
     def get_info(self, auid: int) -> dict[str, Any]: ...

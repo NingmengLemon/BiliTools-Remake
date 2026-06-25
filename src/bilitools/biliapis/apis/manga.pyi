@@ -1,6 +1,6 @@
 from typing import Any, Literal
 
-from biliapis.template import APITemplate
+from ..template import APITemplate
 
 class MangaAPIs(APITemplate):
     def get_detail(self, mcid: int) -> dict[str, Any]: ...

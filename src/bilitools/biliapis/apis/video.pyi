@@ -1,6 +1,6 @@
-from typing import Any, Optional, Literal
+from typing import Any, Literal, Optional
 
-from biliapis.template import APITemplate
+from ..template import APITemplate
 
 class VideoAPIs(APITemplate):
     def get_video_detail(

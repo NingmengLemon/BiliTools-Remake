@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from biliapis.template import APITemplate
+from ..template import APITemplate
 
 class MediaAPIs(APITemplate):
     def get_detail(

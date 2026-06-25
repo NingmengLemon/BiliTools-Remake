@@ -1,7 +1,7 @@
-from typing import Any, Literal, TypedDict
 from http.cookiejar import MozillaCookieJar
+from typing import Any, Literal, TypedDict
 
-from biliapis.template import APITemplate
+from ..template import APITemplate
 
 class _ExitLoginReturn(TypedDict):
     redirectUrl: str
