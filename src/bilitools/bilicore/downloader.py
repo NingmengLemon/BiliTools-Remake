@@ -1,12 +1,12 @@
 import os
-from typing import Callable, Optional, Any, Literal, Iterable
 import threading
-from enum import Enum
 import time
+from enum import Enum
+from typing import Any, Callable, Iterable, Literal, Optional
 
 import requests
 
-from biliapis import HEADERS
+from ..biliapis import HEADERS
 
 
 def get_remote_head(url, session=None, **kwargs):
@@ -104,7 +104,7 @@ class DownloadThread(threading.Thread):
         # 设置 Range 头
         if self._start_byte > 0 or self._end_byte or local_size > 0:
             self._kwargs["headers"]["Range"] = (
-                f"bytes={self._start_byte+local_size}-"
+                f"bytes={self._start_byte + local_size}-"
                 + (f"{self._end_byte}" if self._end_byte else "")
             )
         # 开始

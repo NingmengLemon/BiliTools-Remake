@@ -2,9 +2,9 @@ import logging
 import os
 
 import pytest
+from initapis import SAVEDIR, apis, dump_data
 
-from initapis import apis, dump_data, SAVEDIR
-from bilicore import downloader
+from bilitools.bilicore import downloader
 
 
 def test_get_detail():

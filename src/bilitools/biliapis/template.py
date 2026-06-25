@@ -72,7 +72,7 @@ def request_template(
     """
 
     def decorator(
-        func: Callable[..., tuple[str, dict[str, Any]] | str]
+        func: Callable[..., tuple[str, dict[str, Any]] | str],
     ) -> Callable[..., dict[str, Any] | bytes | str | Any]:
         @functools.wraps(func)
         def wrapper(

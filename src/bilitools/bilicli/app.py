@@ -4,12 +4,11 @@ import logging
 import os
 from typing import Optional
 
-import bilicore
-from biliapis import APIContainer, init_cache
-from biliapis.utils import remove_none
-from bilicore.parser import extract_ids
-from bilicore.utils import check_ffmpeg
-
+from .. import bilicore
+from ..biliapis import APIContainer, init_cache
+from ..biliapis.utils import remove_none
+from ..bilicore.parser import extract_ids
+from ..bilicore.utils import check_ffmpeg
 from . import login, printers, svld, utils
 from .core import CliCore
 

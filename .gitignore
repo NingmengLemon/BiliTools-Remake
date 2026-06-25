@@ -168,3 +168,4 @@ samples/
 bilisession.pkl
 bilitools-cli.dist/
 *.exe
+pdm.lock

@@ -1,14 +1,14 @@
 import base64
-import pickle
+import functools
+import hashlib
 import json
 import logging
-import hashlib
 import os
-import functools
+import pickle
 
 import requests
 
-from biliapis import APIContainer, new_apis
+from ..biliapis import APIContainer, new_apis
 
 
 def save_data(apis: APIContainer, path: str):

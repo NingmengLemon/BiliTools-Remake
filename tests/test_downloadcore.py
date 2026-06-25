@@ -1,8 +1,9 @@
 import logging
-import pytest
 
-from initapis import apis, SAVEDIR
-from bilicore import threads
+import pytest
+from initapis import SAVEDIR, apis
+
+from bilitools.bilicore import threads
 
 
 def test_commonvideo():

@@ -1,15 +1,14 @@
-from typing import Literal, Optional, Any, Callable
+import functools
 import os
 import threading
-import functools
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Callable, Literal, Optional
 
-from biliapis.utils import remove_none
-from biliapis import APIContainer, bilicodes
-from biliapis import subtitle
-from bilicore.downloader import download_common
-from bilicore.parser import select_quality
-from bilicore.utils import filename_escape, merge_avfile, convert_audio
+from ..biliapis import APIContainer, bilicodes, subtitle
+from ..biliapis.utils import remove_none
+from ..bilicore.downloader import download_common
+from ..bilicore.parser import select_quality
+from ..bilicore.utils import convert_audio, filename_escape, merge_avfile
 
 # 写得最史的地方
 
@@ -231,7 +230,7 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
                 (
                     f"{title}"
                     + (
-                        (f"_P{pindex+1}" if len(cidlist) > 1 else "")
+                        (f"_P{pindex + 1}" if len(cidlist) > 1 else "")
                         if self._correct_pindex is None
                         else f"_P{self._correct_pindex}"
                     )

@@ -1,12 +1,12 @@
-import os
 import logging
+import os
 import sys
 import time
 
 import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from bilicore import downloader  # pylint: disable=C0413,E0611
+from bilitools.bilicore import downloader  # pylint: disable=C0413,E0611
 
 SAVEDIR = "./samples/"
 if not os.path.exists(SAVEDIR):
@@ -20,7 +20,7 @@ TEST_LINKS = (
         "ubuntu2404_amd64.iso",
     ),
     ("https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe", "biliwin.exe"),
-    ("https://dl.hdslb.com/mobile/latest/android64/iBiliPlayer-bili.apk", "bili.apk")
+    ("https://dl.hdslb.com/mobile/latest/android64/iBiliPlayer-bili.apk", "bili.apk"),
 )
 
 

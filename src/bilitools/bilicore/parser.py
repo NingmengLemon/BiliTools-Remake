@@ -1,11 +1,10 @@
-from typing import Optional, Literal, Any
 import re
+from typing import Any, Literal, Optional
 
 import requests
 
-from biliapis.constants import HEADERS
-from biliapis import bilicodes
-
+from ..biliapis import bilicodes
+from ..biliapis.constants import HEADERS
 
 ID_PATTERNS = (
     (r"(?<![A-Za-z])(BV[a-zA-Z0-9]{10})", "bvid", str),

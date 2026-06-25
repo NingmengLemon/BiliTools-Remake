@@ -3,7 +3,7 @@ import time
 
 import qrcode
 
-from biliapis import APIContainer, BiliError
+from ..biliapis import APIContainer, BiliError
 from .printers import print_login_info
 
 

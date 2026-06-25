@@ -1,12 +1,12 @@
-import os
-import logging
-import sys
 import json
+import logging
+import os
+import sys
 
 import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from bilicore import parser  # pylint: disable=C0413,E0611
+from bilitools.bilicore import parser  # pylint: disable=C0413,E0611
 
 with open("./tests/video_streams_with_flac.json", "r", encoding="utf-8") as fp:
     SAMPLE: dict = json.load(fp)

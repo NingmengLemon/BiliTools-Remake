@@ -1,12 +1,12 @@
-from typing import Optional, Any, Callable
 import functools
 import math
+from typing import Any, Callable, Optional
 
-from biliapis import APIContainer
-from bilicore.threads import (
-    SingleVideoThread,
+from ..biliapis import APIContainer
+from ..bilicore.threads import (
     SingleAudioThread,
     SingleMangaChapterThread,
+    SingleVideoThread,
 )
 from . import printers, utils
 

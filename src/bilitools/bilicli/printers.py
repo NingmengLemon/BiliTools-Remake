@@ -10,9 +10,7 @@ User    {uname}
 UID     {mid}
 Avatar  {face}
 Coin    {money}
-""".format(
-            **info
-        )
+""".format(**info)
     )
 
 
@@ -24,9 +22,7 @@ Cover     {pic}
 Uploader  {owner[name]}
 Zone      {tname}
 av{aid} / {bvid}
-""".format(
-            **info
-        )
+""".format(**info)
     )
     pages = info["pages"]
     print("%d Part(s) in total" % (len(pages)))
@@ -45,9 +41,7 @@ Uploader    {uname}
 Author(s)   {author}
 Cover       {cover}
 Lyrics      {lyric}
-au{id}""".format(
-            **info
-        ),
+au{id}""".format(**info),
         end="",
     )
     if info.get("bvid"):
@@ -63,9 +57,7 @@ Title   {season_title}
 ss{season_id} / md{media_id}
 Staff:
 {actors}
-""".format(
-            **detail
-        )
+""".format(**detail)
     )
     # 正片
     print("\nMain Episode(s):")
@@ -100,9 +92,7 @@ def print_manga_info(info: dict[str, Any]):
     print(
         """
 Title       {title}
-mc{id}""".format(
-            **info
-        )
+mc{id}""".format(**info)
     )
     print("by:", ",".join(info["author_name"]))
     print()
@@ -127,9 +117,7 @@ def print_audio_playmenu_info(aminfo: dict[str, Any], songlist: list[dict[str, A
 Title       {title}
 Uploader    {uname}
 Cover       {cover}
-""".format(
-            **aminfo
-        )
+""".format(**aminfo)
     )
     if not songlist:
         print("No song yet.")
@@ -144,9 +132,7 @@ def print_series(series_meta: dict[str, Any], series_content: list[dict[str, Any
 Title       {name}
 series_id={series_id} / uid={mid}
 
-{total} video(s) in total""".format(
-            **series_meta
-        )
+{total} video(s) in total""".format(**series_meta)
     )
     for i, video in enumerate(series_content):
         print("P{i:<4d} {bvid} {title}".format(**video, i=i + 1))
@@ -160,9 +146,7 @@ Title       {name}
 season_id={season_id} / uid={mid}
 Cover       {cover}
 
-{total} video(s) in total""".format(
-            **season_meta
-        )
+{total} video(s) in total""".format(**season_meta)
     )
     for i, video in enumerate(archives):
         print("P{i:<4d} {bvid} {title}".format(**video, i=i + 1))

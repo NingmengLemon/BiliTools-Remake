@@ -19,7 +19,9 @@ class APIContainer:
     VERSION = VERSION
     DEFAULT_HEADERS: dict[str, str] = HEADERS.copy()
 
-    def __init__(self, session: Session, wbimanager: CachedWbiManager, extra_data: dict) -> None:
+    def __init__(
+        self, session: Session, wbimanager: CachedWbiManager, extra_data: dict
+    ) -> None:
         self._session = session
         self._wbimanager = wbimanager
         self._extra_data = extra_data
@@ -27,14 +29,16 @@ class APIContainer:
         self.__allow_cache = True
         self.__cache_switch_lock = Lock()
         for compcls in components:
-            compinstance = compcls(session=session, wbimanager=wbimanager, extra_data=extra_data)
+            compinstance = compcls(
+                session=session, wbimanager=wbimanager, extra_data=extra_data
+            )
             setattr(
                 self,
                 compcls.__name__.removesuffix("APIs").lower(),
                 compinstance,
             )
             self.__components.append(compinstance)
-            
+
     @property
     def extra_data(self):
         return self._extra_data
@@ -46,12 +50,12 @@ class APIContainer:
     @property
     def wbimanager(self):
         return self._wbimanager
-    
+
     @property
     def allow_cache(self):
         with self.__cache_switch_lock:
             return self.__allow_cache
-    
+
     @allow_cache.setter
     def allow_cache(self, value: bool):
         with self.__cache_switch_lock:
@@ -70,11 +74,15 @@ def default_session():
 
 
 def new_apis(
-    session: Optional[Session] = None, wbimanager: Optional[CachedWbiManager] = None, extra_data: Optional[dict[str, Any]] = None
+    session: Optional[Session] = None,
+    wbimanager: Optional[CachedWbiManager] = None,
+    extra_data: Optional[dict[str, Any]] = None,
 ) -> APIContainer:
     session = session if session else default_session()
     wbimanager = wbimanager if wbimanager else CachedWbiManager(session)
     extra_data = extra_data if extra_data else {}
 
-    container = APIContainer(session=session, wbimanager=wbimanager, extra_data=extra_data)
+    container = APIContainer(
+        session=session, wbimanager=wbimanager, extra_data=extra_data
+    )
     return container

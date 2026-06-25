@@ -1,13 +1,13 @@
-from typing import Sequence, Optional, Callable, Any, NewType, Protocol
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue
 from threading import Lock
+from typing import Any, Callable, NewType, Optional, Protocol, Sequence
 
 from tqdm import tqdm
 
-from biliapis import APIContainer
+from ..biliapis import APIContainer
 from .hints import WorkerThread
 
 

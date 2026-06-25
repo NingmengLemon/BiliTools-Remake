@@ -5,7 +5,7 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from biliapis.utils import fallback, FallbackFailure  # pylint: disable=C0413
+from bilitools.biliapis.utils import FallbackFailure, fallback  # pylint: disable=C0413
 
 
 # 示例主函数和回退函数

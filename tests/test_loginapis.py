@@ -4,9 +4,9 @@ import time
 
 import pytest
 import qrcode
+from initapis import SAVEDIR, apis, dump_data
 
-from initapis import apis, dump_data, SAVEDIR
-from biliapis import BiliError  # pylint: disable=E0611
+from bilitools.biliapis import BiliError  # pylint: disable=E0611
 
 
 def test_exit_with_no_login():

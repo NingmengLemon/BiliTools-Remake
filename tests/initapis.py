@@ -1,10 +1,10 @@
-import sys
-import os
 import json
+import os
+import sys
 from typing import Any
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from biliapis import new_apis  # pylint: disable=C0413,E0611
+from bilitools.biliapis import new_apis  # pylint: disable=C0413,E0611
 
 apis = new_apis()
 

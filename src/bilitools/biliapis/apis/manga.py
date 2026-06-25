@@ -39,7 +39,7 @@ class MangaAPIs(template.APITemplate):
     def get_image_token(self, *paths: str):
         """用图片path获取图片token，
         将每张图片的url字段和token字段拼接可得到图片的最终url
-        
+
         url+ "?token=" + token"""
         return self._API_IMG_TOKEN + self.PARAMS_UNI, {
             "data": {"urls": json.dumps(list(paths))}

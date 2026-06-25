@@ -3,7 +3,8 @@ import functools
 
 from .error import BiliError
 
-__all__= ["check_abvid", "check_bilicode"]
+__all__ = ["check_abvid", "check_bilicode"]
+
 
 def _check_abvid(
     avid: Optional[int], bvid: Optional[str]

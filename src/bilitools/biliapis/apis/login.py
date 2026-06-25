@@ -1,34 +1,14 @@
 # pylint: disable=E1101,E1120
 # 不是哥们 pylint你疑似有点不太聪明
 # 好的我承认其实是我装饰器用多了导致的
-import json
-import time
-from http import cookiejar
 import binascii
+import json
 import logging
 import re
+import time
+from http import cookiejar
 
-from Crypto.Cipher import PKCS1_OAEP
-from Crypto.PublicKey import RSA
-from Crypto.Hash import SHA256
-
-from .. import checker
-from .. import utils
-from .. import template
-from .. import error
-
-# 关于刷新 Cookies 的相关内容，参见
-# https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/login/cookie_refresh.md
-_KEY_CORRESP = RSA.importKey(
-    """\
------BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDLgd2OAkcGVtoE3ThUREbio0Eg
-Uc/prcajMKXvkCKFCWhJYJcLkcM2DKKcSeFpD/j6Boy538YXnR6VhcuUJOhH2x71
-nzPjfdTcqMz7djHum0qSZA0AyCBDABUqCrfNgCiJ00Ra7GmRj+YCK1NJEuewlb40
-JNrRuoEUXpabUzGB8QIDAQAB
------END PUBLIC KEY-----"""
-)
-_CIPHER_CORRESP = PKCS1_OAEP.new(_KEY_CORRESP, SHA256)
+from .. import checker, error, template, utils
 
 
 class LoginAPIs(template.APITemplate):
@@ -79,14 +59,8 @@ class LoginAPIs(template.APITemplate):
     def check_if_cookies_refresh_required(self, csrf=None):
         return self._API_CHECK_COOKIES_REFRESH, {"params": {"csrf": csrf}}
 
-    @staticmethod
-    def get_correspond_path(ts: int):
-        """ts: 毫秒级时间戳"""
-        encrypted = _CIPHER_CORRESP.encrypt(f"refresh_{ts}".encode())
-        return binascii.b2a_hex(encrypted).decode()
-
     def get_refresh_csrf(self, correspond_path):
-        html =  self.__get_refresh_csrf_req(correspond_path)
+        html = self.__get_refresh_csrf_req(correspond_path)
         if _ := re.search(r'<div id="1-name">([a-z0-9]+?)</div>', html):
             return _.group(1)
         raise error.BiliError(-400)

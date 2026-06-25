@@ -1,7 +1,7 @@
 """
-Original from 
+Original from
 
-https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/wbi.md#python 
+https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/wbi.md#python
 
 , Reorganized.
 """
@@ -29,6 +29,7 @@ MIXINKEY_ENC_TABLE = [
 # fmt: on
 
 HEADERS = _HEADERS.copy()
+
 
 class CachedWbiManager:
     def __init__(self, session: Optional[requests.Session] = None) -> None:
