@@ -93,6 +93,10 @@ def refresh_cookies_flow(apis: APIContainer, refresh_token=None):
     if not data["refresh"]:
         logging.info("no need to refresh cookies")
         return
+    logging.info("refreshing cookies required, timestamp: %s", data["timestamp"])
+    logging.info("howerver this feature is not complete, so no refresh will be done")
+    return
+
     logging.info("start to refresh cookies...")
     ts = data["timestamp"]
     # 需要刷新，开始
