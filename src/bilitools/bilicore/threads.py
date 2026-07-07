@@ -220,7 +220,7 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             if no_audio
             else os.path.join(
                 self._savedir,
-                f"{bvid}_{cid}_{aqid}_videostream"
+                f"{bvid}_{cid}_{aqid}_audiostream"
                 + (".flac" if is_lossless else ".m4a"),
             )
         )
