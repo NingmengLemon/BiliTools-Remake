@@ -5,7 +5,13 @@ description = "A simple media downloader for Bilibili"
 authors = [
     { name = "NingmengLemon", email = "60469383+NingmengLemon@users.noreply.github.com" },
 ]
-dependencies = ["tqdm>=4.66.5", "requests>=2.32.3", "qrcode>=8.0"]
+dependencies = [
+    "bilibili-api-python",
+    "curl-cffi>=0.15.0",
+    "tqdm>=4.68.3",
+    "typer>=0.26.8",
+]
+
 requires-python = "<3.13,>=3.11"
 readme = "README.md"
 license = { text = "MIT" }
@@ -19,10 +25,12 @@ package = true
 [dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
-    "types-qrcode>=8.0.0.20241004",
-    "types-requests>=2.32.0.20241016",
     "types-tqdm>=4.66.0.20240417",
     "pytest>=8.3.3",
     "pytest-cov>=7.1.0",
     "pytest-asyncio>=1.4.0",
 ]
+
+[tool.uv.sources]
+# 原始仓库吃B站的律师函了于是用自己的fork...
+bilibili-api-python = { git = "https://github.com/NingmengLemon/bilibili-api.git", rev = "main" }
