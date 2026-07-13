@@ -170,3 +170,4 @@ bilitools-cli.dist/
 *.exe
 pdm.lock
 /references/
+/tmp/

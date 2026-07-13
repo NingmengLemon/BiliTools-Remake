@@ -2,6 +2,7 @@ import functools
 import math
 from typing import Any, Callable, Optional
 
+from ..adapters import BilibiliClient
 from ..biliapis import APIContainer
 from ..bilicore.threads import (
     SingleAudioThread,
@@ -9,6 +10,7 @@ from ..bilicore.threads import (
     SingleVideoThread,
 )
 from . import printers, utils
+from .state import CredentialState
 
 
 def check_exceptions(func: Callable[..., Optional[list[Exception]]]):
@@ -43,7 +45,12 @@ class CliCore:
     def _common_video_process(
         self, savedir: Optional[str], *, avid=None, bvid=None, **options
     ):
-        video_data = self._apis.video.get_video_detail(avid=avid, bvid=bvid)
+        try:
+            video_data = BilibiliClient(
+                CredentialState.from_session(self._apis.session).to_credential()
+            ).get_legacy_video_detail(aid=avid, bvid=bvid)
+        except Exception:
+            video_data = self._apis.video.get_video_detail(avid=avid, bvid=bvid)
         printers.print_video_info(video_data)
         pindexs = utils.parse_index_option(options.get("index"))  # 从1始计
         if not savedir:

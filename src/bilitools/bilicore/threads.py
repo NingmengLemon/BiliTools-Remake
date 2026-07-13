@@ -4,6 +4,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, Literal, Optional
 
+from ..adapters import BilibiliClient
 from ..biliapis import APIContainer, bilicodes, subtitle
 from ..biliapis.utils import remove_none
 from ..bilicore.downloader import download_common
@@ -195,7 +196,21 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
             subtitles = _
         else:
             subtitles = []
-        streams = self._streams or self._apis.video.get_stream_dash(cid, bvid=bvid)
+        if self._streams is not None:
+            streams = self._streams
+        else:
+            try:
+                from ..bilicli.state import CredentialState
+
+                streams = BilibiliClient(
+                    CredentialState.from_session(self._apis.session).to_credential()
+                ).get_legacy_video_stream_dash(cid=cid, bvid=bvid)
+            except Exception:
+                streams = self._apis.video.get_stream_dash(cid, bvid=bvid)
+        # 老式单文件 FLV/MP4 流的分岔
+        if "dash" not in streams and "durl" in streams:
+            self._worker_single_file(vdata, streams, cidlist, pindex, bvid, cid)
+            return
         vstream, astream = select_quality(
             streams, aq=self._aq, vq=self._vq, enc=self._vc
         )
@@ -336,6 +351,80 @@ class SingleVideoThread(threading.Thread, ThreadUtilsMixin, ThreadProgressMixin)
         if video_detail["copyright"] == 1:
             metadata["artist"] = video_detail["owner"]["name"]
         return metadata
+
+    def _worker_single_file(
+        self,
+        vdata: dict[str, Any],
+        streams: dict[str, Any],
+        cidlist: list[int],
+        pindex: int,
+        bvid: str,
+        cid: int,
+    ):
+        """旧式 FLV/MP4 单文件下载分支。"""
+        durl = streams["durl"][0]
+        quality_id = streams.get("quality", 0)
+        quality_label = bilicodes.stream_flv_video_quality.get(
+            quality_id, f"Q{quality_id}"
+        )
+        fmt = streams.get("format", "flv")
+        title = vdata["title"] if self._correct_title is None else self._correct_title
+        ptitle = (
+            vdata["pages"][pindex]["part"]
+            if self._correct_ptitle is None
+            else self._correct_ptitle
+        )
+        finalfile = os.path.join(
+            self._savedir,
+            filename_escape(
+                f"{title}"
+                + (
+                    f"_P{pindex + 1}"
+                    if len(cidlist) > 1
+                    else ""
+                    if self._correct_pindex is None
+                    else f"_P{self._correct_pindex}"
+                )
+                + (f"_{ptitle}" if ptitle != title or self._correct_ptitle else "")
+                + f"_{quality_label}"
+                + (".mp3" if self._audio_only else f".{fmt}")
+            ),
+        )
+        if os.path.isfile(finalfile):
+            self._report_progress(pgr_text="skipped: file already exists")
+            return
+        coverfile: Optional[str] = None
+        if self._need_cover and vdata.get("pic"):
+            coverfile = finalfile + os.path.splitext(vdata["pic"])[1]
+            self._dfile(vdata["pic"], coverfile, self._apis)
+        if self._audio_only:
+            self._report_progress(
+                pgr_text="terminated: single-file stream has no separated audio"
+            )
+            return
+        tmpfile = finalfile + ".download"
+        urls = [durl["url"]] + list(durl.get("backup_url", []) or [])
+        self._report_progress(pgr_text="single-file stream")
+        self._dstream(urls, tmpfile, self._progress_hook, apis=self._apis)
+        if self._need_metadata or coverfile:
+            self._report_progress(pgr_text="writing metadata")
+            result = finalfile
+            metadata = (
+                self._generate_metadict(vdata, pindex) if self._need_metadata else None
+            )
+            from ..bilicore.utils import convert_audio
+
+            convert_audio(
+                tmpfile,
+                result,
+                metadata=metadata,
+                cover_image=coverfile,
+            )
+        else:
+            os.rename(tmpfile, finalfile)
+        if tmpfile != finalfile and os.path.isfile(tmpfile):
+            os.remove(tmpfile)
+        self._report_progress(pgr_text="done")
 
     def _dsubt(self, url, file, fmt: Literal["vtt", "srt", "lrc"]):
         subt = self._apis.session.get(url, headers=self._apis.DEFAULT_HEADERS).json()

@@ -8,5 +8,8 @@
     "python.analysis.exclude": [
         "references/",
         ".venv/"
+    ],
+    "python.testing.pytestArgs": [
+        "tests"
     ]
 }
